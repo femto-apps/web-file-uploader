@@ -1,0 +1,26 @@
+{
+  "name": "@femto-dev/web-file-uploader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@femto-apps/authentication-consumer": "^1.0.0",
+    "@femto-apps/config": "^1.0.0",
+    "body-parser": "^1.18.3",
+    "connect-redis": "^3.4.1",
+    "cookie-parser": "^1.4.4",
+    "express": "^4.16.4",
+    "express-session": "^1.16.1",
+    "minio": "^7.0.7",
+    "mongoose": "^5.5.3",
+    "morgan": "^1.9.1",
+    "multer": "^1.4.1",
+    "pug": "^2.0.3"
+  }
+}

@@ -1,0 +1,11 @@
+extends components/base
+
+block main
+    section
+        h3 Home
+
+    section
+        if user
+            p Hello #{user.username}.  You are currently logged in.  Would you like to #[a(href='/logout') logout]?
+        else
+            p Hello anonymous.  You are currently logged out.  Would you like to #[a(href='/login') login] or #[a(href='/register') register]?

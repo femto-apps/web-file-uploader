@@ -1,0 +1,23 @@
+include ./nav
+
+doctype html
+html(lang='en')
+    head
+        meta(charset='utf-8')
+        title= page.title
+        meta(name='description', content='Example Site Description')
+        meta(name='author', content='Femto Apps')
+        link(rel='stylesheet', href='https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic')
+        link(rel='stylesheet', href='https://cdn.jsdelivr.net/gh/femto-apps/lib-style@master/dist/main.css')
+
+    body
+        container
+            +nav(nav.title, nav.links)
+
+            main
+                block main
+
+            footer
+                section 
+                    | The source for this website is available #[a(href='https://github.com/femto-apps/web-file-uploader') here]
+                    | under a #[a(href='https://github.com/femto-apps/web-file-uploader/blob/master/LICENSE') MIT] license.

@@ -1,0 +1,8 @@
+mixin nav(title, links)
+    nav
+        section
+            a.nav-title(href='/')= title
+            ul.nav-list.float-right
+                for link in links
+                    li.nav-item
+                        a(href=link.href)= link.title

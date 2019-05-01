@@ -1,0 +1,37 @@
+{
+    port: 3005
+    title: {
+        suffix: 'Femto Uploader'
+    }
+    mongo: {
+        uri: mongodb://localhost:27017/
+        db: fileUploader
+    }
+    minio: {
+        host: localhost
+        port: 9000
+        accessKey: MEC6ZL24RB7SKOPVP68M
+        secretKey: +45LYvwMzAD9QMPOfPetrllzWBU6nG04UyE2sdqv
+    }
+    session: {
+        secret: 3a8glh3al85tgh3a538haga38g
+    }
+    redis: {
+        host: localhost
+        port: 6379
+    }
+    cookie: {
+        name: file-uploader
+        maxAge: 15552000000 // 1000 * 60 * 60 * 24 * 180 (6 months)
+    }
+    tokenService: {
+        endpoint: http://localhost:4500
+    }
+    authenticationProvider: {
+        endpoint: http://localhost:3001
+        consumerId: 99d8e1b7-431d-4fdd-a10f-4c579e1d2268
+    }
+    authenticationConsumer: {
+        endpoint: http://localhost:3005
+    }
+}
