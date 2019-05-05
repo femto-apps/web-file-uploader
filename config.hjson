@@ -1,7 +1,7 @@
 {
     port: 3005
     title: {
-        suffix: 'Femto Uploader'
+        suffix: Femto Uploader
     }
     mongo: {
         uri: mongodb://localhost:27017/
@@ -10,8 +10,8 @@
     minio: {
         host: localhost
         port: 9000
-        accessKey: MEC6ZL24RB7SKOPVP68M
-        secretKey: +45LYvwMzAD9QMPOfPetrllzWBU6nG04UyE2sdqv
+        accessKey: 6ML8SMC66BO2IMCZH9IY
+        secretKey: zO21IgZpawthEK6DibBOthwMWMFqM7iWr0riGCYR
     }
     session: {
         secret: 3a8glh3al85tgh3a538haga38g
@@ -29,7 +29,7 @@
     }
     authenticationProvider: {
         endpoint: http://localhost:3001
-        consumerId: 99d8e1b7-431d-4fdd-a10f-4c579e1d2268
+        consumerId: 49396890-9740-4cde-b3f2-ad6916039f93
     }
     authenticationConsumer: {
         endpoint: http://localhost:3005

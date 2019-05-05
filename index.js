@@ -6,9 +6,12 @@ const Multer = require('multer')
 const mongoose = require('mongoose')
 const express = require('express')
 const morgan = require('morgan')
+const uuidv4 = require('uuid/v4')
 const config = require('@femto-apps/config')
-const minioStorage = require('@femto-apps/multer-minio')
 const authenticationConsumer = require('@femto-apps/authentication-consumer')
+
+const Collection = require('./modules/Collection')
+const minioStorage = require('./modules/MinioMulterStorage')
 
 ;(async () => {
     const app = express()
@@ -24,8 +27,21 @@ const authenticationConsumer = require('@femto-apps/authentication-consumer')
                 secretKey: config.get('minio.secretKey')
             },
             bucket: (req, file) => 'items',
-            folder: (req, file) => 'test_dir/',
-            filename: (req, file) => 'test.png'
+            folder: async (req, file) => {
+                if (req.user) {
+                    return (await Collection.fromUser(req.user)).path
+                }
+
+                const ip = (req.headers['x-forwarded-for'] || '').split(',').pop() || 
+                    req.connection.remoteAddress || 
+                    req.socket.remoteAddress || 
+                    req.connection.socket.remoteAddress
+                
+                return (await Collection.fromIp(ip)).path
+            },
+            filename: async (req, file) => {
+                return uuidv4()
+            }
         }),
         limits: { fileSize: 8589934592 }
     }).single('upload')
@@ -65,7 +81,7 @@ const authenticationConsumer = require('@femto-apps/authentication-consumer')
         if (req.user) {
             links.push({ title: 'Logout', href: res.locals.auth.getLogout(`${req.protocol}://${req.get('host')}${req.originalUrl}`) })
 
-            res.locals.user = req.user.users[0]
+            res.locals.user = req.user
         } else {
             links.push({ title: 'Login', href: res.locals.auth.getLogin(`${req.protocol}://${req.get('host')}${req.originalUrl}`) })
         }
@@ -79,6 +95,7 @@ const authenticationConsumer = require('@femto-apps/authentication-consumer')
     })
 
     app.get('/', (req, res) => {
+        console.log(req.user)
         res.render('home', {
             page: { title: `Home :: ${config.get('title.suffix')}` },
         })
@@ -86,6 +103,8 @@ const authenticationConsumer = require('@femto-apps/authentication-consumer')
 
     app.post('/upload/multipart', multer, (req, res) => {
         console.log(req.file)
+
+        res.json({ hello: 'hi' })
     })
 
     app.listen(port, () => console.log(`Example app listening on port ${port}`))
