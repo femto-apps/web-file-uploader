@@ -3,13 +3,14 @@ const path = require('path')
 
 class MinioMulterStorage {
     constructor(opts) {
-        for (let requirement of ['bucket', 'folder', 'filename', 'minio']) {
+        for (let requirement of ['bucket', 'folder', 'filename', 'minio', 'middleware']) {
             if (typeof opts[requirement] === 'undefined') { throw new Error(`Expects ${requirement}`) }
         }
         
         this.bucket = opts.bucket
         this.folder = opts.folder
         this.filename = opts.filename
+        this.middleware = opts.middleware
 
         this.minio = opts.minio
         this.client = new Minio.Client(this.minio)
@@ -21,12 +22,12 @@ class MinioMulterStorage {
         const filename = await this.filename(req, file)
         const filepath = path.posix.join(folder, filename)
 
-        // we can make a call out to some detection algorithms to see if we can figure
-        // out what type of data this is.
-        console.log('file', file)
+        const { stream, data } = await this.middleware(req, file)
 
-        this.client.putObject(bucket, filepath, file.stream, undefined, (err, etag) => {
-            cb(err, {
+        console.log(data)
+
+        this.client.putObject(bucket, filepath, stream, undefined, (err, etag) => {
+            cb(err, Object.assign({}, data, {
                 storage: {
                     store: 'minio',
                     bucket,
@@ -34,7 +35,7 @@ class MinioMulterStorage {
                     filename,
                     filepath
                 }
-            })
+            }))
         })
     }
 

@@ -10,12 +10,21 @@ const uuidv4 = require('uuid/v4')
 const config = require('@femto-apps/config')
 const authenticationConsumer = require('@femto-apps/authentication-consumer')
 
+const Item = require('./models/Item')
+
+const Types = require('./types')
+const Short = require('./modules/Short')
 const Collection = require('./modules/Collection')
 const minioStorage = require('./modules/MinioMulterStorage')
 
 ;(async () => {
     const app = express()
     const port = config.get('port')
+
+    // const multer = Multer({
+    //     dest: 'E:\\uploads\\',
+    //     limits: { fileSize: 8589934592 }
+    // }).single('upload')
 
     const multer = Multer({
         storage: minioStorage({
@@ -31,16 +40,19 @@ const minioStorage = require('./modules/MinioMulterStorage')
                 if (req.user) {
                     return (await Collection.fromUser(req.user)).path
                 }
-
-                const ip = (req.headers['x-forwarded-for'] || '').split(',').pop() || 
-                    req.connection.remoteAddress || 
-                    req.socket.remoteAddress || 
-                    req.connection.socket.remoteAddress
                 
-                return (await Collection.fromIp(ip)).path
+                return (await Collection.fromIp(req.ip)).path
             },
             filename: async (req, file) => {
                 return uuidv4()
+            },
+            middleware: async (req, file) => {
+                const { data, stream } = await Types.detect(req, file)
+
+                return {
+                    stream,
+                    data: { metadata: data }
+                }
             }
         }),
         limits: { fileSize: 8589934592 }
@@ -76,6 +88,15 @@ const minioStorage = require('./modules/MinioMulterStorage')
     }))
 
     app.use((req, res, next) => {
+        req.ip = (req.headers['x-forwarded-for'] || '').split(',').pop() ||
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
+            req.connection.socket.remoteAddress
+
+        next()
+    })
+
+    app.use((req, res, next) => {
         const links = []
 
         if (req.user) {
@@ -101,10 +122,48 @@ const minioStorage = require('./modules/MinioMulterStorage')
         })
     })
 
-    app.post('/upload/multipart', multer, (req, res) => {
-        console.log(req.file)
+    app.get('/:item', async (req, res) => {
+        const short = await Short.get(req.params.item)
 
-        res.json({ hello: 'hi' })
+        if (short === null) {
+            return res.json({ error: 'Short not found' })
+        }
+
+        const item = await Types.match(short.item)
+        
+        item.serve(req, res)
+    })
+
+    app.post('/upload/multipart', multer, async (req, res) => {
+        const originalName = req.file.originalname
+        const extension = originalName.slice((originalName.lastIndexOf(".") - 1 >>> 0) + 2)
+
+        const item = new Item({
+            name: {
+                original: originalName,
+                extension: extension
+            },
+            storage: req.file.storage,
+            metadata: {
+                views: 0,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                ...req.file.metadata
+            }
+        })
+
+        if (req.user) {
+            item.user = { _id: req.user._id }
+        } else {
+            item.user = { ip: req.ip }
+        }
+
+        await item.save()
+
+        const short = await Short.generate({ keyLength: 4 })
+        const shortItem = await Short.createReference(short, item)
+
+        res.json({ data: { short } })
     })
 
     app.listen(port, () => console.log(`Example app listening on port ${port}`))

@@ -17,6 +17,7 @@
     "cookie-parser": "^1.4.4",
     "express": "^4.16.4",
     "express-session": "^1.16.1",
+    "file-type": "^11.0.0",
     "minio": "^7.0.8",
     "mongoose": "^5.5.3",
     "morgan": "^1.9.1",
