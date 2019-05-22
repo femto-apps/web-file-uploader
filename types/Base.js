@@ -1,11 +1,18 @@
-const Minio = require('../modules/Minio')
+const memoize = require('p-memoize')
+
+const Store = require('../modules/Store')
 
 const name = 'base'
+
+const generateThumb = memoize((item) => {
+    // We don't know what this file is, so we have no idea what the thumb should look like.
+    
+})
 
 class Base {
     constructor(item) {
         this.item = item
-        this.minio = new Minio()
+        this.generateThumb = generateThumb
     }
 
     get name() {
@@ -24,22 +31,42 @@ class Base {
     }
 
     async serve(req, res) {
-        res.set('Content-Disposition', `filename=${this.item.name.original}`)
-        res.set('Content-Type', this.item.metadata.mime)
+        res.set('Content-Disposition', await this.getName())
+        res.set('Content-Type', await this.getMime())
 
-        const stream = await this.minio.download(this.item.storage.bucket, this.item.storage.filepath)
+        const itemStore = new Store(this.item.storage.item)
+
+        const stream = await itemStore.getStream()
         stream.pipe(res)
     }
 
-    async download(req, res) {
+    async raw(req, res) {
         
     }
 
     async thumb(req, res) {
+        if (!this.thumbExists()) {
+            await this.generateThumb(this)
+        } 
+    }
 
+    async thumbExists() {
+        // check if a thumb exists already for this.
     }
 
     async delete() {
+
+    }
+
+    async getMime() {
+        return this.item.metadata.mime
+    }
+
+    async getName() {
+        return `filename=${this.item.name.original}`
+    }
+
+    async generateThumb() {
 
     }
 }

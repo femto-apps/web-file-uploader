@@ -5,13 +5,6 @@ const ItemSchema = mongoose.Schema({
     original: { type: String },
     extension: { type: String },
   },
-  storage: {
-    store: { type: String },
-    bucket: { type: String },
-    folder: { type: String },
-    filename: { type: String },
-    filepath: { type: String }
-  },
   metadata: {
     views: { type: Number },
     createdAt: { type: Date },
@@ -19,6 +12,10 @@ const ItemSchema = mongoose.Schema({
     mime: { type: String },
     encoding: { type: String },
     filetype: { type: String }
+  },
+  storage: {
+    item: { type: mongoose.Schema.Types.ObjectId, ref: 'Store' },
+    thumb: { type: mongoose.Schema.Types.ObjectId, ref: 'Store' }
   },
   user: {
     _id: { type: mongoose.Schema.Types.ObjectId },
@@ -28,5 +25,16 @@ const ItemSchema = mongoose.Schema({
 	timestamps: true,
   strict: false	
 })
+
+function populateItem(next) {
+  // TODO: Replace with only populating when required
+  this.populate('storage.item')
+  this.populate('storage.thumb')
+
+  next()
+}
+
+ItemSchema.pre('findOne', populateItem)
+ItemSchema.pre('find', populateItem)
 
 module.exports = mongoose.model('Item', ItemSchema)

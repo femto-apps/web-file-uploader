@@ -36,7 +36,8 @@ class Short {
   }
 
   static async get(short) {
-    const shortItem = await ShortModel.findOne({ short }).populate('item')
+    const shortItem = await ShortModel.findOne({ short })
+      .populate('item')
 
     return shortItem
   }

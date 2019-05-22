@@ -10,10 +10,11 @@ const uuidv4 = require('uuid/v4')
 const config = require('@femto-apps/config')
 const authenticationConsumer = require('@femto-apps/authentication-consumer')
 
-const Item = require('./models/Item')
 
 const Types = require('./types')
+const Item = require('./modules/Item')
 const Short = require('./modules/Short')
+const Store = require('./modules/Store')
 const Collection = require('./modules/Collection')
 const minioStorage = require('./modules/MinioMulterStorage')
 
@@ -122,33 +123,33 @@ const minioStorage = require('./modules/MinioMulterStorage')
         })
     })
 
-    app.get('/:item', async (req, res) => {
-        const short = await Short.get(req.params.item)
+    app.get('/thumb/:item', Item.fromReq, async (req, res) => {
+        req.item.thumb(req, res)
+    })
 
-        if (short === null) {
-            return res.json({ error: 'Short not found' })
-        }
-
-        const item = await Types.match(short.item)
-        
-        item.serve(req, res)
+    app.get('/:item', Item.fromReq, async (req, res) => {
+        req.item.serve(req, res)
     })
 
     app.post('/upload/multipart', multer, async (req, res) => {
         const originalName = req.file.originalname
         const extension = originalName.slice((originalName.lastIndexOf(".") - 1 >>> 0) + 2)
 
-        const item = new Item({
+        const itemStore = await Store.create(req.file.storage)
+
+        const item = Item.create({
             name: {
                 original: originalName,
                 extension: extension
             },
-            storage: req.file.storage,
             metadata: {
                 views: 0,
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 ...req.file.metadata
+            },
+            storage: {
+                item: itemStore.id()
             }
         })
 
