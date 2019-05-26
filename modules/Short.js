@@ -9,6 +9,8 @@ class Short {
   }
 
   static async createReference(short, item) {
+    console.log(short, item)
+
     const shortItem = new ShortModel({
       short, item: item._id
     })
@@ -40,6 +42,10 @@ class Short {
       .populate('item')
 
     return shortItem
+  }
+
+  id() {
+    return this.short._id
   }
 }
 

@@ -2,20 +2,24 @@ const mongoose = require('mongoose')
 
 const ItemSchema = mongoose.Schema({
   name: {
-    original: { type: String },
-    extension: { type: String },
+    original: { type: String }, // 'Hello.test.exe'
+    extension: { type: String }, // 'exe'
+    filename: { type: String } // 'Hello.test'
   },
   metadata: {
-    views: { type: Number },
-    createdAt: { type: Date },
-    updatedAt: { type: Date },
+    views: { type: Number, default: 0 },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
     mime: { type: String },
     encoding: { type: String },
-    filetype: { type: String }
+    filetype: { type: String },
+    expiresAt: { type: Date }
   },
-  storage: {
-    item: { type: mongoose.Schema.Types.ObjectId, ref: 'Store' },
-    thumb: { type: mongoose.Schema.Types.ObjectId, ref: 'Store' }
+  references: {
+    storage: { type: mongoose.Schema.Types.ObjectId, ref: 'Store' },
+    thumb: { type: mongoose.Schema.Types.ObjectId, ref: 'Item' },
+    canonical: { type: mongoose.Schema.Types.ObjectId, ref: 'Short' },
+    aliases: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Short' }]
   },
   user: {
     _id: { type: mongoose.Schema.Types.ObjectId },
@@ -25,16 +29,5 @@ const ItemSchema = mongoose.Schema({
 	timestamps: true,
   strict: false	
 })
-
-function populateItem(next) {
-  // TODO: Replace with only populating when required
-  this.populate('storage.item')
-  this.populate('storage.thumb')
-
-  next()
-}
-
-ItemSchema.pre('findOne', populateItem)
-ItemSchema.pre('find', populateItem)
 
 module.exports = mongoose.model('Item', ItemSchema)

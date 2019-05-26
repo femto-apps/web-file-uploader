@@ -15,6 +15,7 @@ const Types = require('./types')
 const Item = require('./modules/Item')
 const Short = require('./modules/Short')
 const Store = require('./modules/Store')
+const StoreModel = require('./models/Store')
 const Collection = require('./modules/Collection')
 const minioStorage = require('./modules/MinioMulterStorage')
 
@@ -135,34 +136,36 @@ const minioStorage = require('./modules/MinioMulterStorage')
         const originalName = req.file.originalname
         const extension = originalName.slice((originalName.lastIndexOf(".") - 1 >>> 0) + 2)
 
-        const itemStore = await Store.create(req.file.storage)
+        const store = new StoreModel(req.file.storage)
 
-        const item = Item.create({
+        await store.save()
+        console.log('b')
+
+        const item = await Item.create({
             name: {
                 original: originalName,
-                extension: extension
+                extension: extension,
+                filename: originalName.replace(/\.[^/.]+$/, '')
             },
             metadata: {
-                views: 0,
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 ...req.file.metadata
             },
-            storage: {
-                item: itemStore.id()
-            }
+            references: {
+                storage: store
+            },
+            // storage: {
+            //     item: store
+            // },
+            user: req.user ? { _id: req.user._id } : { ip: req.ip }
         })
 
-        if (req.user) {
-            item.user = { _id: req.user._id }
-        } else {
-            item.user = { ip: req.ip }
-        }
-
-        await item.save()
+        console.log('c')
 
         const short = await Short.generate({ keyLength: 4 })
-        const shortItem = await Short.createReference(short, item)
+        const shortItem = await Short.createReference(short, item.item)
+        await item.setCanonical(shortItem)
 
         res.json({ data: { short } })
     })

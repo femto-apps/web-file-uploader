@@ -17,6 +17,12 @@ class MinioModule {
 
         return stream
     }
+
+    async save({ bucket, filepath }, stream) {
+        const res = await this.client.putObject(bucket, filepath, stream)
+
+        return res
+    }
 }
 
 module.exports = MinioModule

@@ -1,12 +1,34 @@
 const memoize = require('p-memoize')
+const { createCanvas } = require('canvas')
+const uuidv4 = require('uuid/v4')
+const path = require('path')
+const _ = require('lodash')
 
 const Store = require('../modules/Store')
+const Minio = require('../modules/Minio')
 
 const name = 'base'
 
-const generateThumb = memoize((item) => {
+const generateThumb = memoize(async item => {
     // We don't know what this file is, so we have no idea what the thumb should look like.
-    
+    const { createCanvas } = require('canvas')
+    const canvas = createCanvas(256, 256)
+    const ctx = canvas.getContext('2d')
+
+    ctx.font = '30px Impact'
+    ctx.rotate(0.1)
+    ctx.fillText('Awesome!', 50, 100)
+
+    const text = ctx.measureText('Awesome!')
+    ctx.strokeStyle = 'rgba(0,0,0,0.5)'
+    ctx.beginPath()
+    ctx.lineTo(50, 102)
+    ctx.lineTo(50 + text.width, 102)
+    ctx.stroke()
+
+    const stream = canvas.createPNGStream()
+
+    await item.setThumb(stream)
 })
 
 class Base {
@@ -27,16 +49,15 @@ class Base {
     }
 
     static async match(item) {
-        return item.metadata.filetype === name
+        return await item.getFiletype() === name
     }
 
     async serve(req, res) {
-        res.set('Content-Disposition', await this.getName())
+        res.set('Content-Disposition', await this.getFileName())
         res.set('Content-Type', await this.getMime())
 
-        const itemStore = new Store(this.item.storage.item)
+        const stream = await this.item.getItemStream()
 
-        const stream = await itemStore.getStream()
         stream.pipe(res)
     }
 
@@ -45,13 +66,27 @@ class Base {
     }
 
     async thumb(req, res) {
-        if (!this.thumbExists()) {
+        if (!(await this.thumbExists())) {
+            console.log(`Generating thumb for ${await this.item.id()}`)
             await this.generateThumb(this)
-        } 
+        }
+
+        res.set('Content-Disposition', await this.getFileName())
+        res.set('Content-Type', 'image/png')
+
+        const stream = await this.item.getThumbStream()
+        stream.pipe(res)
+    }
+
+    async setThumb(stream) {
+        return this.item.setThumb(stream)
     }
 
     async thumbExists() {
         // check if a thumb exists already for this.
+
+        console.log(typeof this.item.storage.thumb)
+        return typeof this.item.storage.thumb !== 'undefined'
     }
 
     async delete() {
@@ -62,12 +97,18 @@ class Base {
         return this.item.metadata.mime
     }
 
-    async getName() {
-        return `filename=${this.item.name.original}`
+    async getFileName() {
+        return `filename=${this.item.getName()}`
     }
 
     async generateThumb() {
 
+    }
+
+    async getReference(ref) {
+        await this.item.populate(`references.${ref}`)
+
+        return _.get(this.item.references, ref)
     }
 }
 

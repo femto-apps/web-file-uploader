@@ -8,10 +8,10 @@
         db: fileUploader
     }
     minio: {
-        host: localhost
+        host: 127.0.0.1
         port: 9000
-        accessKey: MEC6ZL24RB7SKOPVP68M
-        secretKey: +45LYvwMzAD9QMPOfPetrllzWBU6nG04UyE2sdqv
+        accessKey: 6ML8SMC66BO2IMCZH9IY
+        secretKey: zO21IgZpawthEK6DibBOthwMWMFqM7iWr0riGCYR
     }
     session: {
         secret: 3a8glh3al85tgh3a538haga38g

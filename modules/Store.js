@@ -26,6 +26,16 @@ class Store {
             return stream
         }
     }
+
+    async setStream(stream) {
+        if (this.store.store === 'minio') {
+            const minio = new Minio()
+            await minio.save({
+                bucket: this.store.bucket,
+                filepath: this.store.filepath
+            }, stream)
+        }
+    }
 }
 
 module.exports = Store
