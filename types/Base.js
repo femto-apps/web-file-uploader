@@ -1,8 +1,5 @@
 const memoize = require('p-memoize')
 const { createCanvas } = require('canvas')
-const uuidv4 = require('uuid/v4')
-const path = require('path')
-const _ = require('lodash')
 
 const Store = require('../modules/Store')
 const Minio = require('../modules/Minio')
@@ -11,7 +8,6 @@ const name = 'base'
 
 const generateThumb = memoize(async item => {
     // We don't know what this file is, so we have no idea what the thumb should look like.
-    const { createCanvas } = require('canvas')
     const canvas = createCanvas(256, 256)
     const ctx = canvas.getContext('2d')
 
@@ -66,7 +62,7 @@ class Base {
     }
 
     async thumb(req, res) {
-        if (!(await this.thumbExists())) {
+        if (!(await this.hasThumb())) {
             console.log(`Generating thumb for ${await this.item.id()}`)
             await this.generateThumb(this)
         }
@@ -82,11 +78,8 @@ class Base {
         return this.item.setThumb(stream)
     }
 
-    async thumbExists() {
-        // check if a thumb exists already for this.
-
-        console.log(typeof this.item.storage.thumb)
-        return typeof this.item.storage.thumb !== 'undefined'
+    async hasThumb() {
+        return this.item.hasThumb()
     }
 
     async delete() {
@@ -94,21 +87,15 @@ class Base {
     }
 
     async getMime() {
-        return this.item.metadata.mime
+        return this.item.getMime()
     }
 
     async getFileName() {
-        return `filename=${this.item.getName()}`
+        return `filename=${await this.item.getName()}`
     }
 
     async generateThumb() {
-
-    }
-
-    async getReference(ref) {
-        await this.item.populate(`references.${ref}`)
-
-        return _.get(this.item.references, ref)
+        throw new Error('Dummy function, should be implemented in constructor.')
     }
 }
 

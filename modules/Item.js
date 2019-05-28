@@ -1,7 +1,10 @@
 const _ = require('lodash')
+const uuidv4 = require('uuid/v4')
+const path = require('path')
 
 const ItemModel = require('../models/Item')
 const Short = require('./Short')
+const Store = require('./Store')
 const Types = require('../types')
 
 class Item {
@@ -38,23 +41,35 @@ class Item {
         return this.item.metadata.filetype
     }
 
+    async getMime() {
+        return this.item.metadata.mime
+    }
+
     async getName() {
         return this.item.name.original
     }
 
     async getStore(store) {
-        await this.item.populate(store)
         return new Store(_.get(this.item, store))
+    }
+
+    async getItem(item) {
+        return new Item(_.get(this.item, item))
     }
 
     async getItemStream() {
         const itemStore = await this.getStore('references.storage')
+        
         return itemStore.getStream()
     }
 
     async getThumbStream() {
-        const thumbStore = await this.getStore('references.thumb')
-        return thumbStore.getStream()
+        const thumbItem = await this.getItem('references.thumb')
+        return thumbItem.getItemStream()
+    }
+
+    async hasThumb() {
+        return typeof this.item.references.thumb !== 'undefined'
     }
 
     async setThumb(stream) {
@@ -64,9 +79,9 @@ class Item {
         const thumbStorage = await Store.create({
             store: 'minio',
             bucket: 'items',
-            folder: itemStore.folder,
+            folder: await itemStore.getFolder(),
             filename: filename,
-            filepath: path.posix.join(itemStore.folder, filename)
+            filepath: path.posix.join(await itemStore.getFolder(), filename)
         })
 
         await thumbStorage.setStream(stream)
@@ -84,13 +99,17 @@ class Item {
                 expiresAt: this.item.metadata.expiresAt
             },
             references: {
-                storage: thumbStorage
+                storage: await thumbStorage.getModel()
             },
             user: this.item.user
         })
 
-        this.item.references.thumb = thumb
+        this.item.references.thumb = await thumb.getModel()
         await this.item.save()
+    }
+
+    async getModel() {
+        return this.item
     }
 
     async id() {

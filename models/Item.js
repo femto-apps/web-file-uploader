@@ -16,10 +16,10 @@ const ItemSchema = mongoose.Schema({
     expiresAt: { type: Date }
   },
   references: {
-    storage: { type: mongoose.Schema.Types.ObjectId, ref: 'Store' },
-    thumb: { type: mongoose.Schema.Types.ObjectId, ref: 'Item' },
-    canonical: { type: mongoose.Schema.Types.ObjectId, ref: 'Short' },
-    aliases: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Short' }]
+    storage: { type: mongoose.Schema.Types.ObjectId, ref: 'Store', autopopulate: true },
+    thumb: { type: mongoose.Schema.Types.ObjectId, ref: 'Item', autopopulate: true },
+    canonical: { type: mongoose.Schema.Types.ObjectId, ref: 'Short', autopopulate: true },
+    aliases: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Short', autopopulate: true }]
   },
   user: {
     _id: { type: mongoose.Schema.Types.ObjectId },
@@ -29,5 +29,7 @@ const ItemSchema = mongoose.Schema({
 	timestamps: true,
   strict: false	
 })
+
+ItemSchema.plugin(require('mongoose-autopopulate'))
 
 module.exports = mongoose.model('Item', ItemSchema)

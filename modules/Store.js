@@ -26,6 +26,14 @@ class Store {
             return stream
         }
     }
+    
+    async getFolder() {
+        return this.store.folder
+    }
+
+    async getModel() {
+        return this.store
+    }
 
     async setStream(stream) {
         if (this.store.store === 'minio') {

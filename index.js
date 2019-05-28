@@ -139,7 +139,6 @@ const minioStorage = require('./modules/MinioMulterStorage')
         const store = new StoreModel(req.file.storage)
 
         await store.save()
-        console.log('b')
 
         const item = await Item.create({
             name: {
@@ -160,8 +159,6 @@ const minioStorage = require('./modules/MinioMulterStorage')
             // },
             user: req.user ? { _id: req.user._id } : { ip: req.ip }
         })
-
-        console.log('c')
 
         const short = await Short.generate({ keyLength: 4 })
         const shortItem = await Short.createReference(short, item.item)
