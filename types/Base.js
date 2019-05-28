@@ -1,5 +1,6 @@
 const memoize = require('p-memoize')
-const { createCanvas } = require('canvas')
+const { createCanvas, loadImage } = require('canvas')
+const path = require('path')
 
 const Store = require('../modules/Store')
 const Minio = require('../modules/Minio')
@@ -11,19 +12,21 @@ const generateThumb = memoize(async item => {
     const canvas = createCanvas(256, 256)
     const ctx = canvas.getContext('2d')
 
-    ctx.font = '30px Impact'
-    ctx.rotate(0.1)
-    ctx.fillText('Awesome!', 50, 100)
+    const unknownImagePath = path.posix.join(__dirname, '../public/images/unknown_file.png')
+    const unknown = await loadImage(unknownImagePath)
+    ctx.drawImage(unknown, 0, 0)
 
-    const text = ctx.measureText('Awesome!')
-    ctx.strokeStyle = 'rgba(0,0,0,0.5)'
-    ctx.beginPath()
-    ctx.lineTo(50, 102)
-    ctx.lineTo(50 + text.width, 102)
-    ctx.stroke()
+    ctx.font = '25px Sans'
+    ctx.textAlign = 'center';
+
+    let name = await item.getName()
+    if (name.length > 19) {
+        name = name.substring(0, 16) + '...'
+    }
+
+    ctx.fillText(name, 128, 220, 242)
 
     const stream = canvas.createPNGStream()
-
     await item.setThumb(stream)
 })
 
@@ -80,6 +83,10 @@ class Base {
 
     async hasThumb() {
         return this.item.hasThumb()
+    }
+
+    async getName() {
+        return this.item.getName()
     }
 
     async delete() {
