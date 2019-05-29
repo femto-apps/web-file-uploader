@@ -1,6 +1,7 @@
 const fileType = require('file-type')
 
 const types = [
+    require('./Image'), // matches static images
     require('./Base') // matches everything
 ]
 

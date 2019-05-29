@@ -2,9 +2,6 @@ const memoize = require('p-memoize')
 const { createCanvas, loadImage } = require('canvas')
 const path = require('path')
 
-const Store = require('../modules/Store')
-const Minio = require('../modules/Minio')
-
 const name = 'base'
 
 const generateThumb = memoize(async item => {

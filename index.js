@@ -23,11 +23,6 @@ const minioStorage = require('./modules/MinioMulterStorage')
     const app = express()
     const port = config.get('port')
 
-    // const multer = Multer({
-    //     dest: 'E:\\uploads\\',
-    //     limits: { fileSize: 8589934592 }
-    // }).single('upload')
-
     const multer = Multer({
         storage: minioStorage({
             minio: {
@@ -154,9 +149,6 @@ const minioStorage = require('./modules/MinioMulterStorage')
             references: {
                 storage: store
             },
-            // storage: {
-            //     item: store
-            // },
             user: req.user ? { _id: req.user._id } : { ip: req.ip }
         })
 

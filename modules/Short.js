@@ -47,6 +47,10 @@ class Short {
   id() {
     return this.short._id
   }
+
+  model() {
+    return this.short
+  }
 }
 
 module.exports = Short
