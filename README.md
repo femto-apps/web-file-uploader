@@ -38,3 +38,8 @@ Architecture
 1. User Download
 2. Get item from database
 3. Upload based on type
+
+
+Caching might only work if we keep stats in Redis via:
+    https://github.com/carlosabalde/libvmod-redis
+We could have a pub / sub model to keep page views up to date.
