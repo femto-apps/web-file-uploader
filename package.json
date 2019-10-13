@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@femto-apps/authentication-consumer": "^1.0.1",
-    "@femto-apps/config": "^1.0.0",
+    "@femto-apps/config": "^3.0.0",
     "body-parser": "^1.18.3",
     "canvas": "^2.5.0",
     "connect-redis": "^3.4.1",
