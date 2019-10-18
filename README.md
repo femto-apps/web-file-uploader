@@ -12,8 +12,6 @@
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
 
-
-
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
@@ -24,16 +22,16 @@
   <h3 align="center">Web File Uploader</h3>
 
   <p align="center">
-    An awesome README template to jumpstart your projects!
+    Share files, images and other content.
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/femto-apps/web-file-uploader"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
+    <a href="https://v2.femto.pw">View Demo</a>
     ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
+    <a href="https://github.com/femto-apps/web-file-uploader/issues">Report Bug</a>
     ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
+    <a href="https://github.com/femto-apps/web-file-uploader/issues">Request Feature</a>
   </p>
 </p>
 
@@ -59,26 +57,21 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+[![Web File Uploader Screenshot][product-screenshot]](https://v2.femto.pw)
 
-There are many great README templates available on GitHub, however, I didn't find one that really suit my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need.
+Sharing files, images and other forms of media between users should be easy and fast.  Unfortunately many existing sharing solutions will only accept certain formats (e.g. sharing images) or have security issues surrounding execution of untrusted code.
 
-Here's why:
-* Your time should be focused on creating something amazing. A project that solves a problem and helps others
-* You shouldn't be doing the same tasks over and over like creating a README from scratch
-* You should element DRY principles to the rest of your life :smile:
+Thus, the aptly named 'web file uploader' has been written, it's main features include:
 
-Of course, no one template will serve all projects since your needs may be different. So I'll be adding more in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue.
-
-A list of commonly used resources that I find helpful are listed in the acknowledgements.
+- At some point we should add.
+- Some actual features of the project here.
+- But hey, not yet.
 
 ### Built With
-This section should list any major frameworks that you built your project using. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
-* [Bootstrap](https://getbootstrap.com)
-* [JQuery](https://jquery.com)
-* [Laravel](https://laravel.com)
 
-
+* [Node](https://nodejs.org)
+* [Redis](https://redis.io/)
+* [MongoDB](https://www.mongodb.com/)
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -124,7 +117,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ROADMAP -->
 ## Roadmap
 
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/femto-apps/web-file-uploader/issues) for a list of proposed features (and known issues).
 
 
 
@@ -188,51 +181,3 @@ Project Link: [https://github.com/your_username/repo_name](https://github.com/yo
 [license-shield]: https://img.shields.io/github/license/femto-apps/web-file-uploader.svg?style=flat-square
 [license-url]: https://github.com/femto-apps/web-file-uploader/blob/master/LICENSE.txt
 [product-screenshot]: public/images/screenshot.png
-
-
-
-## File Uploader
-
-A service that lets you host a public / private file uploading service.
-
-### Design & Architecture
-
-MongoDB Store
-
-```javascript
-Item {
-    _id: ObjectId,
-    name: {
-        original: String,
-        extension: String
-    },
-    storage: {
-        store: String,
-        filepath: String
-    },
-    metadata: {
-        views: Integer,
-        createdAt: Date,
-        updatedAt: Date
-    },
-    user: {
-        _id: ObjectId
-    }
-}
-```
-
-Architecture
-
-1. User Upload
-2. Decide File Type
-3. Enrich File
-4. Store File
-
-1. User Download
-2. Get item from database
-3. Upload based on type
-
-
-Caching might only work if we keep stats in Redis via:
-    https://github.com/carlosabalde/libvmod-redis
-We could have a pub / sub model to keep page views up to date.
