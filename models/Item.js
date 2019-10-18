@@ -24,7 +24,8 @@ const ItemSchema = mongoose.Schema({
   user: {
     _id: { type: mongoose.Schema.Types.ObjectId },
     ip: { type: String }
-  }
+  },
+  version: { type: Number, default: 3 }
 }, {
 	timestamps: true,
   strict: false	
