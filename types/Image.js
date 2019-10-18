@@ -1,6 +1,9 @@
 const Base = require('./Base')
 const memoize = require('p-memoize')
 const { createCanvas, loadImage } = require('canvas')
+const smartcrop = require('smartcrop-sharp')
+const toArray = require('stream-to-array')
+const sharp = require('sharp')
 const path = require('path')
 
 const name = 'image'
@@ -10,23 +13,17 @@ const generateThumb = memoize(async item => {
   const canvas = createCanvas(256, 256)
   const ctx = canvas.getContext('2d')
 
-  const unknownImagePath = path.posix.join(__dirname, '../public/images/unknown_file.png')
-  const unknown = await loadImage(unknownImagePath)
-  ctx.drawImage(unknown, 0, 0)
+  const body = Buffer.concat(await toArray(await item.item.getItemStream()))
 
-  ctx.font = '25px Sans'
-  ctx.textAlign = 'center';
+  const result = await smartcrop.crop(body, { width: 256, height: 256 })
+  const crop = result.topCrop
 
-  let name = await item.getName()
-  if (name.length > 19) {
-      name = name.substring(0, 16) + '...'
-  }
+  const buffer = await sharp(body)
+    .extract({ width: crop.width, height: crop.height, left: crop.x, top: crop.y })
+    .resize(256, 256)
+    .toBuffer()
 
-  ctx.fillText('image', 128, 55, 242)
-  ctx.fillText(name, 128, 220, 242)
-
-  const stream = canvas.createPNGStream()
-  await item.setThumb(stream)
+  await item.setThumb(buffer)
 }) 
 
 class Image extends Base {

@@ -18,12 +18,21 @@ class Store {
         return this.store._id
     }
 
-    async getStream() {
+    async getStream(range) {
         if (this.store.store === 'minio') {
             const minio = new Minio()
-            const stream = await minio.download(this.store.bucket, this.store.filepath)
+            const stream = await minio.download(this.store.bucket, this.store.filepath, range)
 
             return stream
+        }
+    }
+
+    async getStat() {
+        if (this.store.store === 'minio') {
+            const minio = new Minio()
+            const stats = await minio.stat(this.store.bucket, this.store.filepath)
+
+            return stats
         }
     }
     

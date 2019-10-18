@@ -1,0 +1,10 @@
+extends components/base
+
+block main
+    section
+        grid.uploads
+            for item in items
+                - const hit = `${item.item.metadata.views} hit${item.item.metadata.views != 1 ? 's' : ''}`
+                - const message = `${item.item.name.original} (${hit})`
+                a.thumb-link(href=`/${item.item.references.canonical.short}`)
+                    img.thumb(src=`/thumb/${item.item.references.canonical.short}` alt=message title=message)

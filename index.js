@@ -1,7 +1,6 @@
 const session = require('express-session')
 const cookieParser = require('cookie-parser')
 const RedisStore = require('connect-redis')(session)
-const bodyParser = require('body-parser')
 const Multer = require('multer')
 const mongoose = require('mongoose')
 const express = require('express')
@@ -10,11 +9,11 @@ const uuidv4 = require('uuid/v4')
 const config = require('@femto-apps/config')
 const authenticationConsumer = require('@femto-apps/authentication-consumer')
 
-
 const Types = require('./types')
 const Item = require('./modules/Item')
 const Short = require('./modules/Short')
 const Store = require('./modules/Store')
+const User = require('./modules/User')
 const StoreModel = require('./models/Store')
 const Collection = require('./modules/Collection')
 const minioStorage = require('./modules/MinioMulterStorage')
@@ -34,11 +33,7 @@ const minioStorage = require('./modules/MinioMulterStorage')
             },
             bucket: (req, file) => 'items',
             folder: async (req, file) => {
-                if (req.user) {
-                    return (await Collection.fromUser(req.user)).path
-                }
-                
-                return (await Collection.fromIp(req.ip)).path
+                return (await Collection.fromReq(req)).path
             },
             filename: async (req, file) => {
                 return uuidv4()
@@ -84,6 +79,18 @@ const minioStorage = require('./modules/MinioMulterStorage')
         redirect: config.get('redirect')
     }))
 
+    app.use(async (req, res, next) => {
+        if (req.user) {
+            req.user = await User.fromUser(req.user)
+        }
+
+        if (req.body && req.body.apiKey && !req.user) {
+            req.user = await User.fromApiKey(req.body.apiKey)
+        }
+
+        next()
+    })
+
     app.use((req, res, next) => {
         req.ip = (req.headers['x-forwarded-for'] || '').split(',').pop() ||
             req.connection.remoteAddress ||
@@ -112,10 +119,21 @@ const minioStorage = require('./modules/MinioMulterStorage')
         next()
     })
 
-    app.get('/', (req, res) => {
-        console.log(req.user)
+    app.get('/', async (req, res) => {
         res.render('home', {
             page: { title: `Home :: ${config.get('title.suffix')}` },
+            key: req.user.getApiKey()
+        })
+    })
+
+    app.get('/uploads', async (req, res) => {
+        const collection = await Collection.fromReq(req)
+        const items = (await collection.list())
+            .filter(item => item.item.metadata.filetype !== 'thumb')
+        
+        res.render('uploads', {
+            page: { title: `Uploads :: ${config.get('title.suffix')}` },
+            items
         })
     })
 
@@ -130,6 +148,10 @@ const minioStorage = require('./modules/MinioMulterStorage')
     app.post('/upload/multipart', multer, async (req, res) => {
         const originalName = req.file.originalname
         const extension = originalName.slice((originalName.lastIndexOf(".") - 1 >>> 0) + 2)
+
+        if (req.body && req.body.apiKey && !req.user) {
+            req.user = await User.fromApiKey(req.body.apiKey)
+        }
 
         const store = new StoreModel(req.file.storage)
 
@@ -149,7 +171,7 @@ const minioStorage = require('./modules/MinioMulterStorage')
             references: {
                 storage: store
             },
-            user: req.user ? { _id: req.user._id } : { ip: req.ip }
+            user: req.user.getIdentifier() ? { _id: req.user.getIdentifier() } : { ip: req.ip }
         })
 
         const short = await Short.generate({ keyLength: 4 })

@@ -12,10 +12,15 @@ class MinioModule {
         })
     }
 
-    async download(bucket, file) {
-        const stream = await this.client.getObject(bucket, file)
+    async download(bucket, file, range) {
+        if (typeof range === 'undefined') return this.client.getObject(bucket, file)
+        return this.client.getPartialObject(bucket, file, range.start, range.end - range.start)
+    }
 
-        return stream
+    async stat(bucket, file) {
+        const stats = await this.client.statObject(bucket, file)
+
+        return stats
     }
 
     async save({ bucket, filepath }, stream) {

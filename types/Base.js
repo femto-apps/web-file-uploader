@@ -1,6 +1,9 @@
 const memoize = require('p-memoize')
 const { createCanvas, loadImage } = require('canvas')
 const path = require('path')
+const { promisify } = require('util')
+const sendRanges = require('send-ranges')
+const { PassThrough } = require('stream')
 
 const name = 'base'
 
@@ -48,13 +51,47 @@ class Base {
         return await item.getFiletype() === name
     }
 
+    async handleRange(req) {
+        const stats = await this.item.getItemStat()
+        const getStream = range => {
+            const out = new PassThrough();
+
+            this.item.getItemStream(range)
+                .then(stream =>  stream.pipe(out))
+                .catch(e => stream.emit('error', e))
+
+            return out
+        }
+
+        return {
+            getStream, type: await this.getMime(), size: stats.size
+        }
+    }
+
     async serve(req, res) {
         res.set('Content-Disposition', await this.getFileName())
         res.set('Content-Type', await this.getMime())
 
-        const stream = await this.item.getItemStream()
+        if (req.headers.range) {
+            await promisify(sendRanges(this.handleRange.bind(this)))(req, res)
+        } else {
+            const streamPromise = this.item.getItemStream()
+            const statsPromise = this.item.getItemStat()
 
-        stream.pipe(res)
+            const [stream, stats] = await Promise.all([streamPromise, statsPromise])
+
+            res.set('Content-Length', stats.size)
+            res.set('Accept-Ranges', 'bytes')
+            res.writeHead(200)
+
+            stream.pipe(res)
+
+            await this.incrementViews()
+        }
+    }
+
+    async incrementViews() {
+        return this.item.incrementViews()
     }
 
     async raw(req, res) {

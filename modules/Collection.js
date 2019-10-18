@@ -1,26 +1,36 @@
 const uuidv4 = require('uuid/v4')
 
 const CollectionModel = require('../models/Collection')
+const ItemModel = require('../models/Item')
+const Item = require('../modules/Item')
 
 class Collection {
   constructor(collection) {
     this.collection = collection
-
+    
     this.path = collection.path
   }
 
+  static async fromReq(req) {
+    if (req.user) {
+      return Collection.fromUser(req.user)
+    }
+  
+    return Collection.fromIp(req.ip)
+  }
+
   static async fromUser(user) {
-    let collection = CollectionModel.find({
-      user: user._id
+    let collection = await CollectionModel.findOne({
+      user: user.getIdentifier()
     })
 
     if (!collection) {
       collection = new CollectionModel({
-        user: user._id,
+        user: user.getIdentifier(),
         path: uuidv4() + '/'
       })
   
-      await collection.save()
+      collection = await collection.save()
     }
 
     return new Collection(collection)
@@ -41,6 +51,16 @@ class Collection {
     }
 
     return new Collection(collection)
+  }
+
+  async list() {
+    if (this.collection.user) {
+      return (await ItemModel.find({ 'user._id': this.collection.user })).map(item => new Item(item))
+    }
+
+    if (this.collection.ip) {
+      return (await ItemModel.find({ 'user.ip': this.collection.ip })).map(item => new Item(item))
+    }
   }
 }
 

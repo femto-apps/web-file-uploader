@@ -49,6 +49,11 @@ class Item {
         return this.item.name.original
     }
 
+    async getCanonical() {
+        console.log(this.item.references.canonical)
+        return this.item.references.canonical
+    }
+
     async getStore(store) {
         return new Store(_.get(this.item, store))
     }
@@ -57,10 +62,16 @@ class Item {
         return new Item(_.get(this.item, item))
     }
 
-    async getItemStream() {
+    async getItemStream(range) {
         const itemStore = await this.getStore('references.storage')
         
-        return itemStore.getStream()
+        return itemStore.getStream(range)
+    }
+
+    async getItemStat() {
+        const itemStore = await this.getStore('references.storage')
+        
+        return itemStore.getStat()
     }
 
     async getThumbStream() {
@@ -110,6 +121,10 @@ class Item {
 
     async getModel() {
         return this.item
+    }
+
+    async incrementViews() {
+        return ItemModel.findOneAndUpdate({ _id: this.item._id }, { $inc : { 'metadata.views' : 1 } }).exec()
     }
 
     async id() {

@@ -1,0 +1,19 @@
+.thumb-link {
+  line-height: 0;
+}
+
+grid.uploads {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-gap: 5px;
+}
+
+grid.uploads img.thumb {
+  max-width: 100%;
+  border-radius: 5px;
+}
+
+buffer {
+  display: block;
+  height: 25px;
+}
