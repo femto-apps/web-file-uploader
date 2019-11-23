@@ -55,11 +55,11 @@ class Collection {
 
   async list() {
     if (this.collection.user) {
-      return (await ItemModel.find({ 'user._id': this.collection.user })).map(item => new Item(item))
+      return (await ItemModel.find({ 'user._id': this.collection.user }).sort('-createdAt')).map(item => new Item(item))
     }
 
     if (this.collection.ip) {
-      return (await ItemModel.find({ 'user.ip': this.collection.ip })).map(item => new Item(item))
+      return (await ItemModel.find({ 'user.ip': this.collection.ip }).sort('-createdAt')).map(item => new Item(item))
     }
   }
 }

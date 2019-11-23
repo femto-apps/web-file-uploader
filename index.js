@@ -6,14 +6,15 @@ const mongoose = require('mongoose')
 const express = require('express')
 const morgan = require('morgan')
 const uuidv4 = require('uuid/v4')
+const toArray = require('stream-to-array')
 const config = require('@femto-apps/config')
 const authenticationConsumer = require('@femto-apps/authentication-consumer')
 
 const Types = require('./types')
 const Item = require('./modules/Item')
 const Short = require('./modules/Short')
-const Store = require('./modules/Store')
 const User = require('./modules/User')
+const Store = require('./modules/Store')
 const StoreModel = require('./models/Store')
 const Collection = require('./modules/Collection')
 const minioStorage = require('./modules/MinioMulterStorage')
@@ -37,21 +38,17 @@ const minioStorage = require('./modules/MinioMulterStorage')
             },
             filename: async (req, file) => {
                 return uuidv4()
-            },
-            middleware: async (req, file) => {
-                const { data, stream } = await Types.detect(req, file)
-
-                return {
-                    stream,
-                    data: { metadata: data }
-                }
             }
         }),
         limits: { fileSize: 8589934592 }
     }).single('upload')
 
-    mongoose.connect(config.get('mongo.uri') + config.get('mongo.db'), { useNewUrlParser: true })
-    mongoose.set('useCreateIndex', true)
+    mongoose.connect(config.get('mongo.uri') + config.get('mongo.db'), {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useFindAndModify: false,
+        useCreateIndex: true
+    })
 
     app.set('view engine', 'pug')
 
@@ -122,8 +119,12 @@ const minioStorage = require('./modules/MinioMulterStorage')
     app.get('/', async (req, res) => {
         res.render('home', {
             page: { title: `Home :: ${config.get('title.suffix')}` },
-            key: req.user.getApiKey()
+            key: req.user ? req.user.getApiKey() : undefined
         })
+    })
+
+    app.get('/robots.txt', async (req, res) => {
+        res.send(`User-agent: *\nAllow: /`)
     })
 
     app.get('/uploads', async (req, res) => {
@@ -153,9 +154,9 @@ const minioStorage = require('./modules/MinioMulterStorage')
             req.user = await User.fromApiKey(req.body.apiKey)
         }
 
-        const store = new StoreModel(req.file.storage)
-
-        await store.save()
+        const store = await Store.create(req.file.storage)
+        const bytes = (await toArray(await store.getStream({ end: 2048, start: 0})))[0]
+        const { data } = await Types.detect(store, bytes, req.file)
 
         const item = await Item.create({
             name: {
@@ -166,10 +167,10 @@ const minioStorage = require('./modules/MinioMulterStorage')
             metadata: {
                 createdAt: new Date(),
                 updatedAt: new Date(),
-                ...req.file.metadata
+                ...data
             },
             references: {
-                storage: store
+                storage: store.store
             },
             user: req.user.getIdentifier() ? { _id: req.user.getIdentifier() } : { ip: req.ip }
         })

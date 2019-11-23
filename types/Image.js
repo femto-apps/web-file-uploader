@@ -37,9 +37,8 @@ class Image extends Base {
     return name
   }
 
-  static async detect(stream, data) {
+  static async detect(store, bytes, data) {
     return {
-      stream,
       result: data.mime.startsWith('image/') ? name : undefined
     }
   }

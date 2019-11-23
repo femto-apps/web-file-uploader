@@ -40,9 +40,8 @@ class Base {
         return name
     }
 
-    static async detect(stream, data) {
+    static async detect(store, bytes, data) {
         return {
-            stream,
             result: name
         }
     }
@@ -57,7 +56,7 @@ class Base {
             const out = new PassThrough();
 
             this.item.getItemStream(range)
-                .then(stream =>  stream.pipe(out))
+                .then(stream => stream.pipe(out))
                 .catch(e => stream.emit('error', e))
 
             return out
