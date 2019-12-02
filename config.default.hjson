@@ -1,5 +1,6 @@
 {
     port: 3005
+    dev: false
     title: {
         suffix: Femto Uploader
     }

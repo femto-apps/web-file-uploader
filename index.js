@@ -8,6 +8,7 @@ const morgan = require('morgan')
 const uuidv4 = require('uuid/v4')
 const toArray = require('stream-to-array')
 const config = require('@femto-apps/config')
+const { EventEmitter } = require('events')
 const authenticationConsumer = require('@femto-apps/authentication-consumer')
 
 const Types = require('./types')
@@ -18,6 +19,39 @@ const Store = require('./modules/Store')
 const StoreModel = require('./models/Store')
 const Collection = require('./modules/Collection')
 const minioStorage = require('./modules/MinioMulterStorage')
+
+const profiling = new EventEmitter()
+
+profiling.on('middleware', ({ req, name, time }) => {
+    console.log(req.method, req.url, ':', name, `${time}ms`)
+})
+
+function wrap(fn) {
+    if (config.get('dev') !== true) {
+        return function (req, res, next) {
+            fn(req, res, function () {
+                next.apply(this, arguments)
+            })
+        }
+    }
+
+    return function (req, res, next) {
+        const start = Date.now()
+        fn(req, res, function () {
+            profiling.emit('middleware', {
+                req,
+                name: fn.name,
+                time: Date.now() - start
+            })
+
+            next.apply(this, arguments)
+        })
+    }
+}
+
+function ignoreAuth(req, res) {
+    return req.originalUrl.startsWith('/thumb/')
+}
 
 ;(async () => {
     const app = express()
@@ -52,33 +86,51 @@ const minioStorage = require('./modules/MinioMulterStorage')
 
     app.set('view engine', 'pug')
 
-    app.use(express.static('public'))
-    app.use(morgan('dev'))
-    app.use(cookieParser(config.get('cookie.secret')))
-    app.use(session({
-        store: new RedisStore({
-            host: config.get('redis.host'),
-            port: config.get('redis.port')
-        }),
-        secret: config.get('session.secret'),
-        resave: false,
-        saveUninitialized: false,
-        name: config.get('cookie.name'),
-        cookie: {
-            maxAge: config.get('cookie.maxAge')
+    app.use(wrap(morgan('dev')))
+    app.use(wrap(cookieParser(config.get('cookie.secret'))))
+    app.use(wrap(function sess(req, res, next) {
+        // if we don't need req.user, ignore it.
+        if (ignoreAuth(req, res)) {
+            return next()
         }
+
+        session({
+            store: new RedisStore({
+                host: config.get('redis.host'),
+                port: config.get('redis.port')
+            }),
+            secret: config.get('session.secret'),
+            resave: false,
+            saveUninitialized: false,
+            name: config.get('cookie.name'),
+            cookie: {
+                maxAge: config.get('cookie.maxAge')
+            }
+        })(req, res, next)
     }))
 
-    app.use(authenticationConsumer({
-        tokenService: { endpoint: config.get('tokenService.endpoint') },
-        authenticationProvider: { endpoint: config.get('authenticationProvider.endpoint'), consumerId: config.get('authenticationProvider.consumerId') },
-        authenticationConsumer: { endpoint: config.get('authenticationConsumer.endpoint') },
-        redirect: config.get('redirect')
+    app.use(wrap(function authConsumer(req, res, next) {
+        // if we don't need req.user, ignore it.
+        if (ignoreAuth(req, res)) {
+            return next()
+        }
+
+        authenticationConsumer({
+            tokenService: { endpoint: config.get('tokenService.endpoint') },
+            authenticationProvider: { endpoint: config.get('authenticationProvider.endpoint'), consumerId: config.get('authenticationProvider.consumerId') },
+            authenticationConsumer: { endpoint: config.get('authenticationConsumer.endpoint') },
+            redirect: config.get('redirect')
+        })(req, res, next)
     }))
 
-    app.use(async (req, res, next) => {
+    app.use(wrap(async function fromUser(req, res, next) {
+        // if we don't need req.user, ignore it.
+        if (ignoreAuth(req, res)) {
+            return next()
+        }
+
         if (req.user) {
-            req.user = await User.fromUser(req.user)
+            req.user = await User.fromUserCached(req.user)
         }
 
         if (req.body && req.body.apiKey && !req.user) {
@@ -86,26 +138,28 @@ const minioStorage = require('./modules/MinioMulterStorage')
         }
 
         next()
-    })
+    }))
 
-    app.use((req, res, next) => {
+    app.use(wrap(function setIp(req, res, next) {
         req.ip = (req.headers['x-forwarded-for'] || '').split(',').pop() ||
             req.connection.remoteAddress ||
             req.socket.remoteAddress ||
             req.connection.socket.remoteAddress
 
         next()
-    })
+    }))
 
-    app.use((req, res, next) => {
+    app.use(wrap(function provideLinks(req, res, next) {
         const links = []
 
-        if (req.user) {
-            links.push({ title: 'Logout', href: res.locals.auth.getLogout(`${req.protocol}://${req.get('host')}${req.originalUrl}`) })
+        if (res.locals.auth) {
+            if (req.user) {
+                links.push({ title: 'Logout', href: res.locals.auth.getLogout(`${req.protocol}://${req.get('host')}${req.originalUrl}`) })
 
-            res.locals.user = req.user
-        } else {
-            links.push({ title: 'Login', href: res.locals.auth.getLogin(`${req.protocol}://${req.get('host')}${req.originalUrl}`) })
+                res.locals.user = req.user
+            } else {
+                links.push({ title: 'Login', href: res.locals.auth.getLogin(`${req.protocol}://${req.get('host')}${req.originalUrl}`) })
+            }
         }
 
         res.locals.nav = {
@@ -114,7 +168,7 @@ const minioStorage = require('./modules/MinioMulterStorage')
         }
 
         next()
-    })
+    }))
 
     app.get('/', async (req, res) => {
         res.render('home', {
@@ -181,6 +235,8 @@ const minioStorage = require('./modules/MinioMulterStorage')
 
         res.json({ data: { short } })
     })
+
+    app.use(wrap(express.static('public')))
 
     app.listen(port, () => console.log(`Example app listening on port ${port}`))
 })()

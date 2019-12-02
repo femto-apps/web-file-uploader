@@ -1,4 +1,5 @@
 const uuidv4 = require('uuid/v4')
+const memoize = require('memoizee')
 
 const UserModel = require('../models/User')
 
@@ -22,6 +23,7 @@ class User {
     }
 
     if (!user.uploader) {
+      console.log('Updating user model')
       user.uploader = new UserModel({
         user: genericUser._id,
         apiKey: uuidv4()
@@ -43,5 +45,13 @@ class User {
     return this.user.uploader.apiKey
   }
 }
+
+User.fromUserCached = memoize(User.fromUser, {
+  promise: true,
+  normalizer: args => args[0]._id,
+  maxAge: 1000 * 60 * 60,
+  preFetch: true,
+  primitive: true
+})
 
 module.exports = User
