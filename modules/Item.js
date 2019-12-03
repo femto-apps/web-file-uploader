@@ -41,6 +41,10 @@ class Item {
         return this.item.metadata.filetype
     }
 
+    async getExpired() {
+        return this.item.metadata.expired
+    }
+
     async getMime() {
         return this.item.metadata.mime
     }

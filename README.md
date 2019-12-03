@@ -63,9 +63,9 @@ Sharing files, images and other forms of media between users should be easy and 
 
 Thus, the aptly named 'web file uploader' has been written, it's main features include:
 
-- At some point we should add.
-- Some actual features of the project here.
-- But hey, not yet.
+- Fast and minimal, pages are <20kb in size.
+- Intelligent handling of files based on type, can generate icons and previews.
+- Handles images, text, URLs and other forms of media.
 
 ### Built With
 
@@ -144,25 +144,16 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
+Alexander Craggs - uploader@femto.host
 
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
+Project Link: [https://github.com/femto-apps/web-file-uploader](https://github.com/femto-apps/web-file-uploader)
 
 
 
 <!-- ACKNOWLEDGEMENTS -->
 ## Acknowledgements
-* [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
 * [Img Shields](https://shields.io)
 * [Choose an Open Source License](https://choosealicense.com)
-* [GitHub Pages](https://pages.github.com)
-* [Animate.css](https://daneden.github.io/animate.css)
-* [Loaders.css](https://connoratherton.com/loaders)
-* [Slick Carousel](https://kenwheeler.github.io/slick)
-* [Smooth Scroll](https://github.com/cferdinandi/smooth-scroll)
-* [Sticky Kit](http://leafo.net/sticky-kit)
-* [JVectorMap](http://jvectormap.com)
-* [Font Awesome](https://fontawesome.com)
 
 
 

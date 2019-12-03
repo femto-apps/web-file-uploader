@@ -68,6 +68,10 @@ class Base {
     }
 
     async serve(req, res) {
+        if (await this.getExpired()) {
+            return res.send('This item has expired.')
+        }
+
         res.set('Content-Disposition', await this.getFileName())
         res.set('Content-Type', await this.getMime())
 
@@ -98,6 +102,10 @@ class Base {
     }
 
     async thumb(req, res) {
+        if (await this.getExpired()) {
+            return res.send('This item has expired.')
+        }
+
         if (!(await this.hasThumb())) {
             console.log(`Generating thumb for ${await this.item.id()}`)
             await this.generateThumb(this)
@@ -128,6 +136,10 @@ class Base {
 
     async getMime() {
         return this.item.getMime()
+    }
+
+    async getExpired() {
+        return this.item.getExpired()
     }
 
     async getFileName() {
