@@ -208,6 +208,18 @@ function ignoreAuth(req, res) {
             req.user = await User.fromApiKey(req.body.apiKey)
         }
 
+        let expiryDate = undefined
+        if (req.body && req.body.expiry) {
+            const expiry = Number(req.body.expiry)
+
+            if (expiry < 0 || expiry > 60 * 60 * 24 * 365 * 1000) {
+                expiryDate = undefined
+            }
+
+            expiryDate = new Date()
+            expiryDate.setSeconds(expiryDate.getSeconds() + expiry)
+        }
+
         const store = await Store.create(req.file.storage)
         const bytes = (await toArray(await store.getStream({ end: 2048, start: 0})))[0]
         const { data } = await Types.detect(store, bytes, req.file)
@@ -219,6 +231,7 @@ function ignoreAuth(req, res) {
                 filename: originalName.replace(/\.[^/.]+$/, '')
             },
             metadata: {
+                expiryDate,
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 ...data

@@ -34,4 +34,19 @@ const ItemSchema = mongoose.Schema({
 
 ItemSchema.plugin(require('mongoose-autopopulate'))
 
-module.exports = mongoose.model('Item', ItemSchema)
+const ItemModel = mongoose.model('Item', ItemSchema)
+
+async function expireItems() {
+  for (let item of await ItemModel.find({ 'metadata.expiresAt': { '$lte': new Date() }, 'metadata.expired': { '$exists': false } })) {
+    item.metadata.expired = true
+    await item.save()
+
+    console.log(`Expired ${item.name.original}, ${item._id}`)
+  }
+
+  setTimeout(expireItems, 60 * 1000)
+}
+
+setTimeout(expireItems, 60 * 1000)
+
+module.exports = ItemModel
