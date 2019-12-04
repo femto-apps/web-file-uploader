@@ -181,6 +181,18 @@ function ignoreAuth(req, res) {
         res.send(`User-agent: *\nAllow: /`)
     })
 
+    app.get('/terms', async (req, res) => {
+        res.render('terms', {
+            page: { title: `Terms of Service :: ${config.get('title.suffix')}` }
+        })
+    })
+
+    app.get('/privacy', async (req, res) => {
+        res.render('privacy', {
+            page: { title: `Privacy :: ${config.get('title.suffix')}` }
+        })
+    })
+
     app.get('/uploads', async (req, res) => {
         const collection = await Collection.fromReq(req)
         const items = (await collection.list())

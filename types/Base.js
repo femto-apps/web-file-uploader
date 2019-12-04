@@ -143,7 +143,7 @@ class Base {
     }
 
     async getFileName() {
-        return `filename=${await this.item.getName()}`
+        return `filename="${await this.item.getName()}"`
     }
 
     async generateThumb() {
