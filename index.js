@@ -208,16 +208,18 @@ function ignoreAuth(req, res) {
             req.user = await User.fromApiKey(req.body.apiKey)
         }
 
-        let expiryDate = undefined
+        console.log(req.body)
+
+        let expiresAt = undefined
         if (req.body && req.body.expiry) {
             const expiry = Number(req.body.expiry)
 
             if (expiry < 0 || expiry > 60 * 60 * 24 * 365 * 1000) {
-                expiryDate = undefined
+                expiresAt = undefined
             }
 
-            expiryDate = new Date()
-            expiryDate.setSeconds(expiryDate.getSeconds() + expiry)
+            expiresAt = new Date()
+            expiresAt.setSeconds(expiresAt.getSeconds() + expiry)
         }
 
         const store = await Store.create(req.file.storage)
@@ -231,7 +233,7 @@ function ignoreAuth(req, res) {
                 filename: originalName.replace(/\.[^/.]+$/, '')
             },
             metadata: {
-                expiryDate,
+                expiresAt,
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 ...data

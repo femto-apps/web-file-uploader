@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 
+const expiryTime = 10 * 1000
+
 const ItemSchema = mongoose.Schema({
   name: {
     original: { type: String }, // 'Hello.test.exe'
@@ -44,9 +46,9 @@ async function expireItems() {
     console.log(`Expired ${item.name.original}, ${item._id}`)
   }
 
-  setTimeout(expireItems, 60 * 1000)
+  setTimeout(expireItems, expiryTime)
 }
 
-setTimeout(expireItems, 60 * 1000)
+setTimeout(expireItems, expiryTime)
 
 module.exports = ItemModel
