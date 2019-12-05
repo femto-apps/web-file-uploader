@@ -10,10 +10,13 @@ block main
         row
             column
                 center
-                    button Upload File
+                    button#upload-files Upload Files
             column
                 center
                     button Shorten URL
 
     section
         p= 'API Key: ' + key
+
+block scripts
+    script(src='/js/uploader.bundle.js')

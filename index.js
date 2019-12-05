@@ -197,6 +197,7 @@ function ignoreAuth(req, res) {
         const collection = await Collection.fromReq(req)
         const items = (await collection.list())
             .filter(item => item.item.metadata.filetype !== 'thumb')
+            .filter(item => item.item.metadata.expired !== true)
         
         res.render('uploads', {
             page: { title: `Uploads :: ${config.get('title.suffix')}` },

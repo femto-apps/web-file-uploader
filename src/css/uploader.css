@@ -1,0 +1,116 @@
+:root {
+    --color-highlight: #0DB4CE;
+    --color-highlight-accent: #19647E;
+    --color-highlight-hover: #19647E;
+    --color-highlight-secondary: #EEC643;
+
+    --color-primary-bg: #202020;
+    --color-primary-fg: #d1d2d3;
+    --color-inverted-bg: #d1d2d3;
+    --color-inverted-fg: #1a1d21;
+    --color-secondary-bg: #292c33;
+
+    --color-foreground-max: #9a9c9e;
+    --color-foreground-high: #75777a;
+    --color-foreground-low: #323538; 
+    --color-foreground-min: #212428;
+}
+
+/**
+ * Uppy overrides
+ */
+
+.uppy-Root {
+  color: var(--color-primary-fg);
+}
+
+.uppy-Dashboard-inner {
+  background-color: var(--color-primary-bg);
+  border: 1px solid var(--color-foreground-high);
+}
+
+.uppy-StatusBar {
+  background-color: var(--color-foreground-low);
+  color: inherit;
+}
+
+.uppy-StatusBar-content {
+  color: var(--color-primary-fg);
+}
+
+.uppy-DashboardContent-bar {
+  background-color: var(--color-foreground-low);
+  border-bottom: 1px solid var(--color-foreground-high);
+}
+
+.uppy-DashboardContent-back {
+  color: var(--color-highlight);
+
+  &:hover {
+    color: var(--color-highlight);
+    text-decoration: underline;
+  }
+  &:focus {
+    background-color: var(--color-primary-bg);
+  }
+}
+
+.uppy-DashboardContent-addMore {
+  color: var(--color-highlight);
+
+  &:hover {
+    color: var(--color-highlight-hover);
+  }
+  &:focus {
+    background-color: var(--color-primary-bg);
+  }
+}
+
+.uppy-DashboardContent-addMoreCaption {
+  color: var(--color-highlight);
+  border-bottom: none;
+
+  &:hover {
+    color: var(--color-highlight-hover);
+    text-decoration: underline;
+  }
+}
+
+.uppy-size--md .uppy-DashboardAddFiles {
+  border: 1px dashed var(--color-foreground-high);
+  background-color: var(--color-primary-bg);
+}
+
+.uppy-Dashboard-AddFilesPanel {
+  background: linear-gradient(0deg, var(--color-primary-bg) 35%, var(--color-foreground-high) 100%);
+}
+
+.uppy-Dashboard-browse {
+  color: var(--color-highlight);
+
+  &:hover, &:focus {
+    text-decoration: underline;
+    border-bottom: none;
+  }
+}
+
+.uppy-StatusBar-progress {
+  background-color: var(--color-highlight);
+}
+
+.uppy-StatusBar-spinner {
+  fill: var(--color-highlight);
+}
+
+.uppy-StatusBar.is-waiting .uppy-StatusBar-actions {
+    background-color: var(--color-primary-bg);
+}
+
+.uppy-DashboardItem-preview img.uppy-DashboardItem-previewImg, .uppy-DashboardItem-previewInnerWrap {
+    border-color: var(--color-primary-bg) !important;
+}
+
+.uppy-Dashboard-dropFilesHereHint {
+  border: 1px dashed var(--color-highlight);
+  background-image: url("data:image/svg+xml,%3Csvg width='48' height='48' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M24 1v1C11.85 2 2 11.85 2 24s9.85 22 22 22 22-9.85 22-22S36.15 2 24 2V1zm0 0V0c13.254 0 24 10.746 24 24S37.254 48 24 48 0 37.254 0 24 10.746 0 24 0v1zm7.707 19.293a.999.999 0 1 1-1.414 1.414L25 16.414V34a1 1 0 1 1-2 0V16.414l-5.293 5.293a.999.999 0 1 1-1.414-1.414l7-7a.999.999 0 0 1 1.414 0l7 7z' fill='%230DB4CE' fill-rule='nonzero'/%3E%3C/svg%3E");
+}

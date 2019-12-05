@@ -12,6 +12,9 @@
   "dependencies": {
     "@femto-apps/authentication-consumer": "^1.0.1",
     "@femto-apps/config": "^3.0.1",
+    "@uppy/core": "^1.6.0",
+    "@uppy/dashboard": "^1.5.0",
+    "@uppy/xhr-upload": "^1.4.0",
     "body-parser": "^1.19.0",
     "buffer-to-stream": "^1.0.0",
     "canvas": "^2.6.0",
@@ -40,5 +43,11 @@
     "stream-to-array": "^2.3.0",
     "stream-to-string": "^1.2.0",
     "uuid": "^3.3.3"
+  },
+  "devDependencies": {
+    "css-loader": "^3.2.1",
+    "style-loader": "^1.0.1",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
   }
 }
