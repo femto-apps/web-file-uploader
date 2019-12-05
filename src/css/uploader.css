@@ -14,6 +14,13 @@
     --color-foreground-high: #75777a;
     --color-foreground-low: #323538; 
     --color-foreground-min: #212428;
+
+    --color-button-bg: #9b4dca;
+    --color-button-fg: #ffffff;
+    --color-button-hover: #606c76;
+
+    --color-seperator: #1b1c1d;
+    --color-hyplinker: #b881d9;
 }
 
 /**
@@ -103,14 +110,61 @@
 }
 
 .uppy-StatusBar.is-waiting .uppy-StatusBar-actions {
-    background-color: var(--color-primary-bg);
+    background-color: var(--color-secondary-bg);
 }
 
-.uppy-DashboardItem-preview img.uppy-DashboardItem-previewImg, .uppy-DashboardItem-previewInnerWrap {
-    border-color: var(--color-primary-bg) !important;
+.uppy-DashboardItem-previewInnerWrap {
+    background-color: var(--color-primary-bg) !important;
 }
 
 .uppy-Dashboard-dropFilesHereHint {
   border: 1px dashed var(--color-highlight);
   background-image: url("data:image/svg+xml,%3Csvg width='48' height='48' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M24 1v1C11.85 2 2 11.85 2 24s9.85 22 22 22 22-9.85 22-22S36.15 2 24 2V1zm0 0V0c13.254 0 24 10.746 24 24S37.254 48 24 48 0 37.254 0 24 10.746 0 24 0v1zm7.707 19.293a.999.999 0 1 1-1.414 1.414L25 16.414V34a1 1 0 1 1-2 0V16.414l-5.293 5.293a.999.999 0 1 1-1.414-1.414l7-7a.999.999 0 0 1 1.414 0l7 7z' fill='%230DB4CE' fill-rule='nonzero'/%3E%3C/svg%3E");
+}
+
+.uppy-StatusBar-actionBtn, .uppy-StatusBar.is-waiting .uppy-StatusBar-actionBtn--upload, .uppy-Dashboard-FileCard-actionsBtn {
+  background-color: var(--color-button-bg);
+  color: var(--color-button-fg);
+}
+
+.uppy-StatusBar-actionBtn:hover, .uppy-StatusBar.is-waiting .uppy-StatusBar-actionBtn--upload:hover, .uppy-Dashboard-FileCard-actionsBtn:hover {
+  background-color: var(--color-button-hover);
+  color: var(--color-button-fg);
+}
+
+.uppy-StatusBar:not([aria-hidden="true"]).is-waiting {
+  background-color: var(--color-secondary-bg);
+  border-top: .1rem solid var(--color-seperator);
+}
+
+.uppy-DashboardContent-bar {
+  border-bottom: .1rem solid var(--color-seperator);
+}
+
+.uppy-Dashboard-FileCard-preview, .uppy-Dashboard-FileCard-actions {
+  background-color: var(--color-primary-bg) !important;
+}
+
+.uppy-Dashboard-FileCard {
+  background-color: var(--color-secondary-bg);
+}
+
+.uppy-DashboardContent-bar {
+    border-bottom: .1rem solid var(--color-seperator);
+}
+
+.uppy-DashboardContent-back:focus, .uppy-DashboardContent-addMoreCaption:focus, .uppy-Dashboard-browse:focus {
+    background-color: #606c76;
+}
+
+.uppy-Dashboard-browse:focus, .uppy-Dashboard-browse:hover {
+  border-bottom: 2px solid var(--color-hyplinker);
+}
+
+.uppy-DashboardContent-back, .uppy-DashboardContent-addMoreCaption, .uppy-DashboardContent-back:hover, .uppy-DashboardContent-addMoreCaption:hover, .uppy-Dashboard-browse, .uppy-Dashboard-browse:hover {
+  color: var(--color-hyplinker);
+}
+
+.UppyIcon {
+    fill: var(--color-hyplinker);
 }
