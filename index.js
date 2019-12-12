@@ -1,6 +1,7 @@
 const session = require('express-session')
 const cookieParser = require('cookie-parser')
 const RedisStore = require('connect-redis')(session)
+const bodyParser = require('body-parser')
 const Multer = require('multer')
 const mongoose = require('mongoose')
 const express = require('express')
@@ -8,6 +9,7 @@ const morgan = require('morgan')
 const uuidv4 = require('uuid/v4')
 const toArray = require('stream-to-array')
 const config = require('@femto-apps/config')
+const compression = require('compression')
 const { EventEmitter } = require('events')
 const authenticationConsumer = require('@femto-apps/authentication-consumer')
 
@@ -85,8 +87,11 @@ function ignoreAuth(req, res) {
     })
 
     app.set('view engine', 'pug')
+    app.disable('x-powered-by')
 
     app.use(wrap(morgan('dev')))
+    app.use(wrap(compression()))
+    app.use(wrap(bodyParser.json()))
     app.use(wrap(cookieParser(config.get('cookie.secret'))))
     app.use(wrap(function sess(req, res, next) {
         // if we don't need req.user, ignore it.
@@ -178,6 +183,7 @@ function ignoreAuth(req, res) {
     })
 
     app.get('/robots.txt', async (req, res) => {
+        res.set('Content-Type', 'text/plain')
         res.send(`User-agent: *\nAllow: /`)
     })
 
@@ -213,28 +219,33 @@ function ignoreAuth(req, res) {
         req.item.serve(req, res)
     })
 
+    app.post('/upload/url', async (req, res) => {
+        req.user = await Utils.getUser(req)
+        const expiresAt = parseExpiry(req.body.expiry)
+        const item = await Item.create({
+            name: {
+                original: req.body.url,
+            },
+            metadata: {
+                filetype: 'url',
+                expiresAt
+            },
+            user: req.user && req.user.getIdentifier() ? { _id: req.user.getIdentifier() } : { ip: req.ip }
+        })
+
+        const short = await Short.generate({ keyLength: 4 })
+        const shortItem = await Short.createReference(short, item.item)
+        await item.setCanonical(shortItem)
+
+        res.json({ data: { short } })
+    })
+
     app.post('/upload/multipart', multer, async (req, res) => {
+        req.user = await Utils.getUser(req)
+
         const originalName = req.file.originalname
         const extension = originalName.slice((originalName.lastIndexOf(".") - 1 >>> 0) + 2)
-
-        if (req.body && req.body.apiKey && !req.user) {
-            req.user = await User.fromApiKey(req.body.apiKey)
-        }
-
-        console.log(req.body)
-
-        let expiresAt = undefined
-        if (req.body && req.body.expiry) {
-            const expiry = Number(req.body.expiry)
-
-            if (expiry < 0 || expiry > 60 * 60 * 24 * 365 * 1000) {
-                expiresAt = undefined
-            }
-
-            expiresAt = new Date()
-            expiresAt.setSeconds(expiresAt.getSeconds() + expiry)
-        }
-
+        const expiresAt = parseExpiry(req.body.expiry)
         const store = await Store.create(req.file.storage)
         const bytes = (await toArray(await store.getStream({ end: 2048, start: 0})))[0]
         const { data } = await Types.detect(store, bytes, req.file)
@@ -254,7 +265,7 @@ function ignoreAuth(req, res) {
             references: {
                 storage: store.store
             },
-            user: req.user.getIdentifier() ? { _id: req.user.getIdentifier() } : { ip: req.ip }
+            user: req.user && req.user.getIdentifier() ? { _id: req.user.getIdentifier() } : { ip: req.ip }
         })
 
         const short = await Short.generate({ keyLength: 4 })

@@ -9,8 +9,8 @@ require('@uppy/dashboard/dist/style.css')
 require('./css/uploader.css')
 
 const uppy = Uppy({
-        autoProceed: false,
-    })
+    autoProceed: false,
+})
     .use(Dashboard, {
         trigger: '#upload-files',
         showProgressDetails: true,
@@ -30,4 +30,10 @@ const uppy = Uppy({
 
 uppy.on('complete', (result) => {
     console.log('Upload complete! We’ve uploaded these files:', result.successful)
+})
+
+const shortenButton = document.getElementById('shorten-url')
+shortenButton.addEventListener('click', () => {
+    const url = prompt('URL to Shorten')
+    fetch('')
 })

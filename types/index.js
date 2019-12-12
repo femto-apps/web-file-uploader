@@ -1,6 +1,7 @@
 const fileType = require('file-type')
 
 const types = [
+    require('./Url'), // matches URLs
     require('./Image'), // matches static images
     require('./Binary'), // matches binary
     require('./Text'), // matches text

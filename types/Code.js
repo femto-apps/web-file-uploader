@@ -25,7 +25,7 @@ class Code extends Base {
   }
 
   static async match(item) {
-    return await item.getFiletype().startsWith(name)
+    return (await item.getFiletype()).startsWith(name)
   }
 }
 
