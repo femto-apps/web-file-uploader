@@ -10,7 +10,6 @@ const uuidv4 = require('uuid/v4')
 const toArray = require('stream-to-array')
 const config = require('@femto-apps/config')
 const compression = require('compression')
-const { EventEmitter } = require('events')
 const authenticationConsumer = require('@femto-apps/authentication-consumer')
 
 const Types = require('./types')
@@ -18,38 +17,11 @@ const Item = require('./modules/Item')
 const Short = require('./modules/Short')
 const User = require('./modules/User')
 const Store = require('./modules/Store')
-const StoreModel = require('./models/Store')
 const Collection = require('./modules/Collection')
+const Utils = require('./modules/Utils')
 const minioStorage = require('./modules/MinioMulterStorage')
 
-const profiling = new EventEmitter()
-
-profiling.on('middleware', ({ req, name, time }) => {
-    console.log(req.method, req.url, ':', name, `${time}ms`)
-})
-
-function wrap(fn) {
-    if (config.get('dev') !== true) {
-        return function (req, res, next) {
-            fn(req, res, function () {
-                next.apply(this, arguments)
-            })
-        }
-    }
-
-    return function (req, res, next) {
-        const start = Date.now()
-        fn(req, res, function () {
-            profiling.emit('middleware', {
-                req,
-                name: fn.name,
-                time: Date.now() - start
-            })
-
-            next.apply(this, arguments)
-        })
-    }
-}
+const { wrap } = require('./modules/Profiling')
 
 function ignoreAuth(req, res) {
     return req.originalUrl.startsWith('/thumb/')
@@ -157,6 +129,8 @@ function ignoreAuth(req, res) {
     app.use(wrap(function provideLinks(req, res, next) {
         const links = []
 
+        res.locals.req = req
+
         if (res.locals.auth) {
             if (req.user) {
                 links.push({ title: 'Logout', href: res.locals.auth.getLogout(`${req.protocol}://${req.get('host')}${req.originalUrl}`) })
@@ -211,17 +185,9 @@ function ignoreAuth(req, res) {
         })
     })
 
-    app.get('/thumb/:item', Item.fromReq, async (req, res) => {
-        req.item.thumb(req, res)
-    })
-
-    app.get('/:item', Item.fromReq, async (req, res) => {
-        req.item.serve(req, res)
-    })
-
     app.post('/upload/url', async (req, res) => {
         req.user = await Utils.getUser(req)
-        const expiresAt = parseExpiry(req.body.expiry)
+        const expiresAt = Utils.parseExpiry(req.body.expiry)
         const item = await Item.create({
             name: {
                 original: req.body.url,
@@ -245,9 +211,9 @@ function ignoreAuth(req, res) {
 
         const originalName = req.file.originalname
         const extension = originalName.slice((originalName.lastIndexOf(".") - 1 >>> 0) + 2)
-        const expiresAt = parseExpiry(req.body.expiry)
+        const expiresAt = Utils.parseExpiry(req.body.expiry)
         const store = await Store.create(req.file.storage)
-        const bytes = (await toArray(await store.getStream({ end: 2048, start: 0})))[0]
+        const bytes = (await toArray(await store.getStream({ end: 2048, start: 0 })))[0]
         const { data } = await Types.detect(store, bytes, req.file)
 
         const item = await Item.create({
@@ -273,6 +239,14 @@ function ignoreAuth(req, res) {
         await item.setCanonical(shortItem)
 
         res.json({ data: { short } })
+    })
+
+    app.get(['/thumb/:item', '/thumb/:item/*'], Item.fromReq, async (req, res) => {
+        req.item.thumb(req, res)
+    })
+
+    app.get(['/:item', '/:item/*'], Item.fromReq, async (req, res) => {
+        req.item.serve(req, res)
     })
 
     app.use(wrap(express.static('public')))

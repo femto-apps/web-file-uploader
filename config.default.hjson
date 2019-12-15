@@ -35,4 +35,7 @@
     authenticationConsumer: {
         endpoint: http://localhost:3005
     }
+    experimental: {
+        profiling: false
+    }
 }

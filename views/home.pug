@@ -16,6 +16,20 @@ block main
                     button#shorten-url Shorten URL
 
     section
+        pre
+            code#info.
+                #[span.comment # Upload using ShareX (Windows)]
+                $ Download #[a(href='https://getsharex.com/').link ShareX] then install #[a(href='/sharex/uploader.sxcu').link our uploader] and #[a(href='/sharex/shortener.sxcu').link our shortener]
+
+                #[span.comment # Upload from your terminal]
+                $ curl -F "upload=@'UPLOAD_PATH'" #[span= req.protocol + '://' + req.get('host') + '/upload']
+
+                #[span.comment # Upload using our alias]
+                $ curl #[span= req.protocol + '://' + req.get('host') + '/bash/bashrc'] >> ~/.bashrc
+                $ . ~/.bashrc
+                $ upload 'UPLOAD_PATH';
+                #[#upload_container.hidden #[span.comment #[br]# Uploaded files]#[#uploads]]
+    section
         p= 'API Key: ' + key
 
 block scripts

@@ -27,6 +27,18 @@ class Url extends Base {
         res.redirect(await this.getName())
         await this.incrementViews()
     }
+
+    async raw(req, res) {
+        return res.send('Thumb hasn\'t been implemented for URLs.')
+    }
+
+    async thumb(req, res) {
+        if (await this.getExpired()) {
+            return res.send('This item has expired.')
+        }
+
+        return res.send('Thumb hasn\'t been implemented for URLs.')
+    }
 }
 
 module.exports = Url

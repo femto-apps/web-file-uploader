@@ -10,6 +10,7 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
+[![Chat][chat-shield]][chat-url]
 [![MIT License][license-shield]][license-url]
 
 <!-- PROJECT LOGO -->
@@ -165,6 +166,8 @@ Project Link: [https://github.com/femto-apps/web-file-uploader](https://github.c
 [contributors-url]: https://github.com/femto-apps/web-file-uploader/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/femto-apps/web-file-uploader.svg?style=flat-square
 [forks-url]: https://github.com/femto-apps/web-file-uploader/network/members
+[chat-shield]: https://img.shields.io/discord/493418312714289158?style=flat-square
+[chat-url]: https://femto.pw/discord
 [stars-shield]: https://img.shields.io/github/stars/femto-apps/web-file-uploader.svg?style=flat-square
 [stars-url]: https://github.com/femto-apps/web-file-uploader/stargazers
 [issues-shield]: https://img.shields.io/github/issues/femto-apps/web-file-uploader.svg?style=flat-square

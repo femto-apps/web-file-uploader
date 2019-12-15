@@ -168,3 +168,15 @@
 .UppyIcon {
     fill: var(--color-hyplinker);
 }
+
+.comment {
+  color: grey;
+}
+
+.link {
+  text-decoration: underline;
+}
+
+.hidden {
+  display: none;
+}

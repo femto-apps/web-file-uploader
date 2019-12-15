@@ -19,8 +19,8 @@ class Item {
         return new Item(item)
     }
 
-    static async fromReq(req, res, next) {
-        const short = await Short.get(req.params.item)
+    static async fromReq(req, res, next) {        
+        const short = await Short.get(req.params.item.split('.')[0])
 
         if (short === null) {
             return res.json({ error: 'Short not found' })
@@ -90,6 +90,8 @@ class Item {
     async setThumb(stream) {
         const itemStore = await this.getStore('references.storage')
         const filename = uuidv4()
+
+        console.log(this)
 
         const thumbStorage = await Store.create({
             store: 'minio',

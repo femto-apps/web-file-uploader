@@ -32,8 +32,29 @@ uppy.on('complete', (result) => {
     console.log('Upload complete! We’ve uploaded these files:', result.successful)
 })
 
+uppy.on('upload-success', (file, resp) => {
+    console.log('Single upload complete', file, resp)
+
+    document.getElementById('upload_container').style.display = 'block'
+    document.getElementById('uploads').innerHTML +=
+        `<a class='link' href='${resp.body.url}'>${resp.body.url}</a> <span class='comment'># ${file.data.name} (<a class='link' target='_blank' href='/info/${resp.body.url}'>info</a>)</span><br>`
+})
+
 const shortenButton = document.getElementById('shorten-url')
-shortenButton.addEventListener('click', () => {
+shortenButton.addEventListener('click', async () => {
     const url = prompt('URL to Shorten')
-    fetch('')
+    const resp = await fetch('/upload/url', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ url })
+    })
+        .then(res => res.json())
+
+    document.getElementById('upload_container').style.display = 'block'
+    document.getElementById('uploads').innerHTML += 
+        `<a class='link' href='/${resp.data.short}'>${window.location.origin}/${resp.data.short}</a> <span class='comment'># ${url} (<a class='link' target='_blank' href='/info/${resp.data.short}'>info</a>)</span>`
+
+    console.log(resp)
 })
