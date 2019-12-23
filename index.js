@@ -241,6 +241,8 @@ function ignoreAuth(req, res) {
         res.json({ data: { short } })
     })
 
+    app.use(wrap(express.static('public')))
+
     app.get(['/thumb/:item', '/thumb/:item/*'], Item.fromReq, async (req, res) => {
         req.item.thumb(req, res)
     })
@@ -248,8 +250,6 @@ function ignoreAuth(req, res) {
     app.get(['/:item', '/:item/*'], Item.fromReq, async (req, res) => {
         req.item.serve(req, res)
     })
-
-    app.use(wrap(express.static('public')))
 
     app.listen(port, () => console.log(`Example app listening on port ${port}`))
 })()
