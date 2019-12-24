@@ -9,8 +9,14 @@ class User {
   }
 
   static async fromApiKey(key) {
+    const uploaderUser = await UserModel.findOne({ apiKey: key })
+
+    if (!uploaderUser) {
+      return undefined
+    }
+
     let user = {
-      uploader: await UserModel.findOne({ apiKey: key })
+      uploader: uploaderUser
     }
 
     return new User(user)
@@ -30,12 +36,22 @@ class User {
       })
 
       await user.uploader.save()
-    } 
+    }
 
     return new User(user)
   }
 
+  static fromReq(req) {
+    if (req.body && req.body.apiKey && !req.user) {
+        return User.fromApiKey(req.body.apiKey)
+    }
+
+    return req.user
+  }
+
   getIdentifier() {
+    console.log(this.user)
+
     if (this.user) {
       return this.user._id || this.user.uploader.user
     }

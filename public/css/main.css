@@ -17,3 +17,12 @@ buffer {
   display: block;
   height: 25px;
 }
+
+.spoiler:not(:hover) {
+  color: black;
+  background-color: black;
+}
+
+.spoiler:not(:hover) > * {
+  opacity: 0;
+}

@@ -30,7 +30,7 @@ block main
                 $ upload 'UPLOAD_PATH';
                 #[#upload_container.hidden #[span.comment #[br]# Uploaded files]#[#uploads]]
     section
-        p= 'API Key: ' + key
+        p API Key: #[input#apikey.spoiler(readonly, value=key)]
 
 block scripts
     script(src='/js/uploader.bundle.js')

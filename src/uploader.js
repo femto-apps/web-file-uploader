@@ -58,3 +58,8 @@ shortenButton.addEventListener('click', async () => {
 
     console.log(resp)
 })
+
+const apikey = document.getElementById('apikey')
+apikey.addEventListener('click', async () => {
+    apikey.select()
+})

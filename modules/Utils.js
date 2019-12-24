@@ -19,14 +19,6 @@ class Utils {
 
         return expiresAt
     }
-
-    static getUser(req) {
-        if (req.body && req.body.apiKey && !req.user) {
-            return User.fromApiKey(req.body.apiKey)
-        }
-
-        return req.user
-    }
 }
 
 module.exports = Utils

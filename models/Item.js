@@ -16,7 +16,8 @@ const ItemSchema = mongoose.Schema({
     encoding: { type: String },
     filetype: { type: String },
     expiresAt: { type: Date },
-    expired: { type: Boolean }
+    expired: { type: Boolean },
+    size: { type: Number, default: 0 }
   },
   references: {
     storage: { type: mongoose.Schema.Types.ObjectId, ref: 'Store', autopopulate: true },

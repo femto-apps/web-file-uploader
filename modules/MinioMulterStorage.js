@@ -22,17 +22,19 @@ class MinioMulterStorage {
         const filename = await this.filename(req, file)
         const filepath = path.posix.join(folder, filename)
 
-        this.client.putObject(bucket, filepath, file.stream, undefined, (err, etag) => {
-            cb(err, Object.assign({}, {
-                storage: {
-                    store: 'minio',
-                    bucket,
-                    folder,
-                    filename,
-                    filepath
-                }
-            }))
-        })
+        await this.client.putObject(bucket, filepath, file.stream, undefined)
+        const stat = await this.client.statObject(bucket, filepath)
+        
+        cb(undefined, Object.assign({}, {
+            storage: {
+                store: 'minio',
+                bucket,
+                folder,
+                filename,
+                filepath,
+                size: stat.size
+            }
+        }))
     }
 
     _removeFile(req, file, cb) {

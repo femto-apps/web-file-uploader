@@ -5,7 +5,8 @@ const StoreSchema = mongoose.Schema({
     bucket: { type: String },
     folder: { type: String },
     filename: { type: String },
-    filepath: { type: String }
+    filepath: { type: String },
+    size: { type: Number, default: 0 }
 }, {
     timestamps: true,
     strict: false

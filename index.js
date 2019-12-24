@@ -174,6 +174,10 @@ function ignoreAuth(req, res) {
     })
 
     app.get('/uploads', async (req, res) => {
+        if (!req.user) {
+            res.send('Please login to see uploads')
+        }
+
         const collection = await Collection.fromReq(req)
         const items = (await collection.list())
             .filter(item => item.item.metadata.filetype !== 'thumb')
@@ -186,7 +190,7 @@ function ignoreAuth(req, res) {
     })
 
     app.post('/upload/url', async (req, res) => {
-        req.user = await Utils.getUser(req)
+        req.user = await User.fromReq(req)
         const expiresAt = Utils.parseExpiry(req.body.expiry)
         const item = await Item.create({
             name: {
@@ -207,7 +211,7 @@ function ignoreAuth(req, res) {
     })
 
     app.post('/upload/multipart', multer, async (req, res) => {
-        req.user = await Utils.getUser(req)
+        req.user = await User.fromReq(req)
 
         const originalName = req.file.originalname
         const extension = originalName.slice((originalName.lastIndexOf(".") - 1 >>> 0) + 2)
@@ -226,6 +230,7 @@ function ignoreAuth(req, res) {
                 expiresAt,
                 createdAt: new Date(),
                 updatedAt: new Date(),
+                size: req.file.storage.size,
                 ...data
             },
             references: {
