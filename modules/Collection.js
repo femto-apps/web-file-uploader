@@ -19,6 +19,16 @@ class Collection {
     return Collection.fromIp(req.ip)
   }
 
+  static async fromItem(item) {
+    if (item.user._id) {
+      return Collection.fromUser({
+        getIdentifier: () => item.user._id
+      })
+    }
+
+    return Collection.fromIp(item.user.ip)
+  }
+
   static async fromUser(user) {
     let collection = await CollectionModel.findOne({
       user: user.getIdentifier()

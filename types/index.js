@@ -4,6 +4,7 @@ const types = [
     require('./Url'), // matches URLs
     require('./Image'), // matches static images
     require('./Binary'), // matches binary
+    require('./Code'), // matches programming codes
     require('./Text'), // matches text
 
     // this should never be reached.

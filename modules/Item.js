@@ -6,6 +6,7 @@ const ItemModel = require('../models/Item')
 const Short = require('./Short')
 const Store = require('./Store')
 const Types = require('../types')
+const Collection = require('./Collection')
 
 class Item {
     constructor(item) {
@@ -89,16 +90,15 @@ class Item {
 
     async setThumb(stream) {
         const itemStore = await this.getStore('references.storage')
+        const folder = itemStore.store ? itemStore.getFolder() : (await Collection.fromItem(this.item)).path
         const filename = uuidv4()
-
-        console.log(this)
 
         const thumbStorage = await Store.create({
             store: 'minio',
             bucket: 'items',
-            folder: await itemStore.getFolder(),
+            folder: folder,
             filename: filename,
-            filepath: path.posix.join(await itemStore.getFolder(), filename)
+            filepath: path.posix.join(folder, filename)
         })
 
         await thumbStorage.setStream(stream)

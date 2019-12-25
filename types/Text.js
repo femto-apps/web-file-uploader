@@ -1,10 +1,47 @@
+const memoize = require('p-memoize')
+const toArray = require('stream-to-array')
+const fs = require('fs').promises
+const tmp = require('tmp')
+const resolvePath = require('resolve-path')
+const execa = require('execa')
+const uuidv4 = require('uuid/v4')
+const sharp = require('sharp')
+const smartcrop = require('smartcrop-sharp')
+
 const Base = require('./Base')
 
 const name = 'text'
+const tempDir = tmp.dirSync()
+
+const generateThumb = memoize(async item => {
+  // We don't know what this file is, so we have no idea what the thumb should look like.
+  // 256, 256 smart crop
+  const itemBuffer = Buffer.concat(await toArray(await item.item.getItemStream())).toString('utf-8')
+  const tempPath = resolvePath(tempDir.name, await item.getName())
+
+  const uuid = uuidv4()
+
+  await fs.writeFile(tempPath, itemBuffer, 'utf-8')
+  const {stdout, stderr} = await execa('carbon-now', ['-h', tempPath, '-t', uuid])
+  await fs.rename(`${uuid}.png`, `${tempPath}.png`)
+  const body = await fs.readFile(`${tempPath}.png`)
+
+  const result = await smartcrop.crop(body, { width: 256, height: 256 })
+  const crop = result.topCrop
+
+  const buffer = await sharp(body)
+    .extract({ width: crop.width, height: crop.height, left: crop.x, top: crop.y })
+    .resize(256, 256)
+    .toBuffer()
+
+  await item.setThumb(buffer)
+})
 
 class Text extends Base {
   constructor(item) {
     super(item)
+    
+    this.generateThumb = generateThumb
   }
 
   get name() {

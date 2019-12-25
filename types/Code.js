@@ -1,11 +1,11 @@
 const CombinedStream = require('combined-stream')
 const languageDetect = require('language-detect')
 
-const Base = require('./Base')
+const Text = require('./Text')
 
 const name = 'code'
 
-class Code extends Base {
+class Code extends Text {
   constructor(item) {
     super(item)
   }
@@ -15,6 +15,9 @@ class Code extends Base {
   }
 
   static async detect(store, bytes, data) {
+    // disabled for now
+    return { result: undefined }
+
     const language = await languageDetect.classify(bytes.toString())
 
     console.log(language)

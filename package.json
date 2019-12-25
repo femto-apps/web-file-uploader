@@ -23,6 +23,7 @@
     "compression": "^1.7.4",
     "connect-redis": "^3.4.1",
     "cookie-parser": "^1.4.4",
+    "execa": "^4.0.0",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
     "file-type": "^12.3.0",
@@ -38,10 +39,13 @@
     "multistream": "^4.0.0",
     "p-memoize": "^3.1.0",
     "pug": "^2.0.4",
+    "puppeteer": "^2.0.0",
+    "resolve-path": "^1.4.0",
     "send-ranges": "^3.0.0",
     "sharp": "^0.23.1",
     "smartcrop-sharp": "^2.0.3",
     "stream-to-array": "^2.3.0",
+    "tmp": "^0.1.0",
     "uuid": "^3.3.3"
   },
   "devDependencies": {
