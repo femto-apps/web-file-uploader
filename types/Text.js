@@ -8,6 +8,8 @@ const uuidv4 = require('uuid/v4')
 const sharp = require('sharp')
 const smartcrop = require('smartcrop-sharp')
 
+const Utils = require('../modules/Utils')
+
 const Base = require('./Base')
 
 const name = 'text'
@@ -16,7 +18,7 @@ const tempDir = tmp.dirSync()
 const generateThumb = memoize(async item => {
   // We don't know what this file is, so we have no idea what the thumb should look like.
   // 256, 256 smart crop
-  const itemBuffer = Buffer.concat(await toArray(await item.item.getItemStream())).toString('utf-8')
+  const itemBuffer = await Utils.getFirstLines(await item.item.getItemStream(), 12)
   const tempPath = resolvePath(tempDir.name, await item.getName())
 
   const uuid = uuidv4()

@@ -247,6 +247,7 @@ function ignoreAuth(req, res) {
     })
 
     app.use(wrap(express.static('public')))
+    app.use(wrap(express.static('public/favicons')))
 
     app.get(['/thumb/:item', '/thumb/:item/*'], Item.fromReq, async (req, res) => {
         req.item.thumb(req, res)

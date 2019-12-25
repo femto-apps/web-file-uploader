@@ -2,7 +2,6 @@ const uuidv4 = require('uuid/v4')
 
 const CollectionModel = require('../models/Collection')
 const ItemModel = require('../models/Item')
-const Item = require('../modules/Item')
 
 class Collection {
   constructor(collection) {
@@ -64,6 +63,8 @@ class Collection {
   }
 
   async list() {
+    const Item = require('./Item')
+
     if (this.collection.user) {
       return (await ItemModel.find({ 'user._id': this.collection.user }).sort('-createdAt')).map(item => new Item(item))
     }

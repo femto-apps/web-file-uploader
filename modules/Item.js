@@ -90,7 +90,7 @@ class Item {
 
     async setThumb(stream) {
         const itemStore = await this.getStore('references.storage')
-        const folder = itemStore.store ? itemStore.getFolder() : (await Collection.fromItem(this.item)).path
+        const folder = itemStore.store ? await itemStore.getFolder() : (await Collection.fromItem(this.item)).path
         const filename = uuidv4()
 
         const thumbStorage = await Store.create({
