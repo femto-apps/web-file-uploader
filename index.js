@@ -20,6 +20,7 @@ const Store = require('./modules/Store')
 const Collection = require('./modules/Collection')
 const Utils = require('./modules/Utils')
 const minioStorage = require('./modules/MinioMulterStorage')
+const ShareX = require('./modules/ShareX')
 
 const { wrap } = require('./modules/Profiling')
 
@@ -248,6 +249,9 @@ function ignoreAuth(req, res) {
 
     app.use(wrap(express.static('public')))
     app.use(wrap(express.static('public/favicons')))
+
+    app.get('/sharex/uploader.sxcu', ShareX.downloadUploader)
+    app.get('/sharex/shortener.sxcu', ShareX.downloadShortener)
 
     app.get(['/thumb/:item', '/thumb/:item/*'], Item.fromReq, async (req, res) => {
         req.item.thumb(req, res)

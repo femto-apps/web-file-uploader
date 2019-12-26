@@ -19,8 +19,8 @@ buffer {
 }
 
 .spoiler:not(:hover) {
-  color: black;
-  background-color: black;
+  color: #2b2b2b;
+  background-color: #2b2b2b;
 }
 
 .spoiler:not(:hover) > * {

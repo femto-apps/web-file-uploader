@@ -30,7 +30,22 @@ block main
                 $ upload 'UPLOAD_PATH';
                 #[#upload_container.hidden #[span.comment #[br]# Uploaded files]#[#uploads]]
     section
-        p API Key: #[input#apikey.spoiler(readonly, value=key)]
+        h3 Temp Links:
+    section
+        a(href='/uploads') See your uploads
+        br
+        a(href='/privacy') Current Privacy Policy
+        br
+        a(href='/terms') Current Terms
+        br
+        br
+        br
+    section
+        row
+            column(style='width:10%;')
+                p API Key:
+            column(style='width:90%;')
+                input#apikey.spoiler(readonly, value=key)
 
 block scripts
     script(src='/js/uploader.bundle.js')

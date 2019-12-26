@@ -2,7 +2,12 @@
     port: 3005
     dev: false
     title: {
+        name: Femto Uploader
+        shortener: Femto Shortener
         suffix: Femto Uploader
+    }
+    url: {
+        origin: https://v2.femto.pw/
     }
     mongo: {
         uri: mongodb://localhost:27017/
