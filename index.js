@@ -21,6 +21,7 @@ const Collection = require('./modules/Collection')
 const Utils = require('./modules/Utils')
 const minioStorage = require('./modules/MinioMulterStorage')
 const ShareX = require('./modules/ShareX')
+const Archive = require('./modules/Archive')
 
 const { wrap } = require('./modules/Profiling')
 
@@ -173,6 +174,24 @@ function ignoreAuth(req, res) {
             page: { title: `Privacy :: ${config.get('title.suffix')}` }
         })
     })
+
+    // app.get('/export', async (req, res) => {
+    //     if (!req.user) {
+    //         res.send('Please login to export your uploads')
+    //     }
+
+    //     const collection = await Collection.fromReq(req)
+    //     const items = (await collection.list())
+    //         .filter(item => item.item.metadata.filetype !== 'thumb')
+    //         .filter(item => item.item.metadata.expired !== true)
+
+    //     res.set('Content-Disposition', `filename="femto_export.zip"`)
+    //     res.set('Content-Type', 'application/zip')
+
+    //     console.log('hey')
+
+    //     Archive.archive(res, items)
+    // })
 
     app.get('/uploads', async (req, res) => {
         if (!req.user) {

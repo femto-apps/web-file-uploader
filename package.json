@@ -15,6 +15,7 @@
     "@uppy/core": "^1.6.0",
     "@uppy/dashboard": "^1.5.0",
     "@uppy/xhr-upload": "^1.4.0",
+    "archiver": "^3.1.1",
     "body-parser": "^1.19.0",
     "buffer-to-stream": "^1.0.0",
     "canvas": "^2.6.0",
