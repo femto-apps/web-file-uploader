@@ -8,6 +8,8 @@ const Base = require('./Base')
 const name = 'url'
 
 const generateThumb = memoize(async item => {
+    console.log('Generating thumb for URL: ', item)
+
     // We don't know what this file is, so we have no idea what the thumb should look like.
     const url = await item.getName()
 
