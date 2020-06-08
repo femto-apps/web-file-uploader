@@ -23,6 +23,8 @@ class User {
   }
 
   static async fromUser(genericUser) {
+    console.log('genericUser', genericUser)
+
     let user = {
       generic: genericUser,
       uploader: await UserModel.findOne({ user: genericUser._id })
@@ -34,6 +36,8 @@ class User {
         user: genericUser._id,
         apiKey: uuidv4()
       })
+
+      console.log('userUploader', user.uploader)
 
       await user.uploader.save()
     }
