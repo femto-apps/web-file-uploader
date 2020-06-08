@@ -13,12 +13,17 @@ const generateThumb = memoize(async item => {
     // We don't know what this file is, so we have no idea what the thumb should look like.
     const url = await item.getName()
 
-    const browser = await puppeteer.launch()
-    const page = await browser.newPage()
-    await page.setViewport({ width: 1920, height: 1080 })
-    await page.goto(url)
-    const body = await page.screenshot()
-    await browser.close()
+    try {
+        const browser = await puppeteer.launch()
+        const page = await browser.newPage()
+        await page.setViewport({ width: 1920, height: 1080 })
+        await page.goto(url)
+        const body = await page.screenshot()
+        await browser.close()
+    } catch(e) {
+        console.log(e)
+        return Base.baseThumb(item)
+    }
 
     const result = await smartcrop.crop(body, { width: 256, height: 256 })
     const crop = result.topCrop

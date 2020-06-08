@@ -1,5 +1,5 @@
 const _ = require('lodash')
-const uuidv4 = require('uuid/v4')
+const { v4: uuidv4 } = require('uuid')
 const path = require('path')
 
 const ItemModel = require('../models/Item')

@@ -77,43 +77,49 @@ Thus, the aptly named 'web file uploader' has been written, it's main features i
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
 To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
+* [node](https://nodejs.org/en/download/) (tested on v12+)
 * npm
 ```sh
 npm install npm@latest -g
 ```
+* minio
+```sh
+# either from https://min.io/ or with Docker:
+docker volume create --name=miniodata
+docker run -p 9000:9000 -e MINIO_ACCESS_KEY=CHANGE_ME_ACCESS_KEY -e MINIO_SECRET_KEY=CHANGE_ME_SECRET_KEY --name minio -v miniodata:/data -d minio/minio server /data
+```
+* mongo
+```sh
+# either from https://www.mongodb.com/ or with Docker:
+docker volume create --name=mongodata
+docker run -p 27017:27017 --name mongo -v mongodata:/data/db -d mongo
+```
+* redis
+```sh
+# either from https://redis.io/ or with Docker:
+docker volume create --name=redisdata
+docker run -p 6379:6379 --name redis -v redisdata:/data -d redis redis-server --appendonly yes
+```
 
 ### Installation
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+1. Clone the repo
 ```sh
-git clone https:://github.com/your_username_/Project-Name.git
+git clone https://github.com/femto-apps/web-file-uploader
 ```
-3. Install NPM packages
+2. Install NPM packages
 ```sh
 npm install
 ```
-4. Enter your API in `config.js`
-```JS
-const API_KEY = 'ENTER YOUR API';
+3. Copy `config.default.hjson` to `config.hjson`
+```sh
+cp config.default.hjson config.hjson
 ```
-
-
-
-<!-- USAGE EXAMPLES -->
-## Usage
-
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
-
-
+4. Update the configuration to your liking, specifically you must change `minio.accessKey`, `minio.secretKey`, `session.secret` and `authenticationProvider.consumerId`
 
 <!-- ROADMAP -->
 ## Roadmap
@@ -174,4 +180,4 @@ Project Link: [https://github.com/femto-apps/web-file-uploader](https://github.c
 [issues-url]: https://github.com/femto-apps/web-file-uploader/issues
 [license-shield]: https://img.shields.io/github/license/femto-apps/web-file-uploader.svg?style=flat-square
 [license-url]: https://github.com/femto-apps/web-file-uploader/blob/master/LICENSE.txt
-[product-screenshot]: public/images/screenshot.png
+[product-screenshot]: public/images/new_screenshot.png

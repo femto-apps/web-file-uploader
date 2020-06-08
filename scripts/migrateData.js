@@ -1,6 +1,6 @@
 const Minio = require('minio')
 const path = require('path')
-const uuidv4 = require('uuid/v4')
+const { v4: uuidv4 } = require('uuid')
 const fetch = require('node-fetch')
 const config = require('@femto-apps/config')
 const mongoose = require('mongoose')
@@ -23,6 +23,13 @@ const minioOptions = {
     }
 }
 
+const minimalItemConnection = mongoose.createConnection(config.get('mongo.uri') + 'minimal_design', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    useCreateIndex: true
+})
+
 mongoose.connect(config.get('mongo.uri') + config.get('mongo.db'), {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -30,9 +37,18 @@ mongoose.connect(config.get('mongo.uri') + config.get('mongo.db'), {
     useCreateIndex: true
 })
 
+const MinimalItem = minimalItemConnection.model('Item', {})
+
 const client = new Minio.Client(minioOptions.minio)
 
 async function convertItem(original) {
+    original = JSON.parse(JSON.stringify(original))
+
+    if (await newShort.get(original.name.short)) {
+        console.log('already handled', original._id, original.name.short)
+        return
+    }
+
     console.log('original', original)
 
     const originalName = original.name.original
@@ -40,7 +56,7 @@ async function convertItem(original) {
 
     console.log('grabbing data stream')
     // download file and reupload it to minio
-    const dataStream = await fetch('https://v2.femto.pw/dvnb')
+    const dataStream = await fetch(`http://localhost:7983/${original.name.short}`)
         .then(res => res.body)
 
     console.log(dataStream)
@@ -106,32 +122,20 @@ async function convertItem(original) {
 
     console.log(item)
     console.log(shortItem)
+
+    console.log('finished')
 }
 
-convertItem({
-    "_id": "5bacf2599ddbd30eec206b81",
-    "name": {
-        "short": "ccjpa3",
-        "extension": "png",
-        "original": "chrome_2018-09-27_16-08-09.png"
-    },
-    "storage": {
-        "store": "C:\\Users\\Alexander\\Documents\\GitHub\\minimal_design\\sites\\host\\store",
-        "filename": "91e893fc-c3e6-48ba-b731-869f8a1e8e3d"
-    },
-    "file": {
-        "encoding": "7bit",
-        "mime": "image/png",
-        "length": 43996,
-        "filetype": "image"
-    },
-    "user": {
-        "loggedIn": "anonymous",
-        "ip": "::1"
-    },
-    "version": 2,
-    "views": 1,
-    "createdAt": "2018-09-27T15:08:09.901Z",
-    "updatedAt": "2018-09-27T15:08:16.211Z",
-    "__v": 0
-})
+async function init() {
+    const items = await MinimalItem.find()
+
+    for (let item of items) {
+        await convertItem(item)
+    }
+
+    console.log('disconnecting')
+
+    mongoose.disconnect()
+}
+
+init()

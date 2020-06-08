@@ -152,3 +152,4 @@ class Base {
 }
 
 module.exports = Base
+module.exports.baseThumb = generateThumb

@@ -4,7 +4,7 @@ const fs = require('fs').promises
 const tmp = require('tmp')
 const resolvePath = require('resolve-path')
 const execa = require('execa')
-const uuidv4 = require('uuid/v4')
+const { v4: uuidv4 } = require('uuid')
 const sharp = require('sharp')
 const smartcrop = require('smartcrop-sharp')
 

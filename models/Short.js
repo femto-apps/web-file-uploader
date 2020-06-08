@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const ShortSchema = mongoose.Schema({
-  short: { type: String },
+  short: { type: String, unique: true },
   item: { type: mongoose.Schema.Types.ObjectId, ref: 'Item' }
 }, {
 	timestamps: true,

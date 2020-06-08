@@ -6,10 +6,11 @@ const Multer = require('multer')
 const mongoose = require('mongoose')
 const express = require('express')
 const morgan = require('morgan')
-const uuidv4 = require('uuid/v4')
+const { v4: uuidv4 } = require('uuid')
 const toArray = require('stream-to-array')
 const config = require('@femto-apps/config')
 const compression = require('compression')
+const redis = require('redis')
 const authenticationConsumer = require('@femto-apps/authentication-consumer')
 
 const Types = require('./types')
@@ -42,7 +43,7 @@ function ignoreAuth(req, res) {
                 accessKey: config.get('minio.accessKey'),
                 secretKey: config.get('minio.secretKey')
             },
-            bucket: (req, file) => 'items',
+            bucket: (req, file) => config.get('minio.itemBucket'),
             folder: async (req, file) => {
                 return (await Collection.fromReq(req)).path
             },
@@ -75,8 +76,10 @@ function ignoreAuth(req, res) {
 
         session({
             store: new RedisStore({
-                host: config.get('redis.host'),
-                port: config.get('redis.port')
+                client: redis.createClient({
+                    host: config.get('redis.host'),
+                    port: config.get('redis.port')
+                })
             }),
             secret: config.get('session.secret'),
             resave: false,
