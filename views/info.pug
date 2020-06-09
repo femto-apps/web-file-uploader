@@ -1,0 +1,53 @@
+extends components/base
+
+mixin row(header, value)
+  tr
+    th= header
+    td= value
+
+block main
+    section
+        center
+            p
+                h3 Info for #[span= item.name.original]
+
+    section
+        h4 General Information
+
+        table
+            tbody
+                +row('Original Name', item.name.original)
+                +row('Size', prettyBytes(item.metadata.size))
+                +row('Created At', dateFormat(item.metadata.createdAt, 'longDate'))
+                +row('Canonical Name', item.references.canonical.short)
+                +row('Views', item.metadata.views)
+
+    sectionw
+        h4 Developer Information
+        
+        table
+            tbody
+                +row('Extracted Filename', item.name.filename)
+                +row('Extracted Extension', item.name.extension)
+                +row('Virus Scan', `[Run: ${item.metadata.virus.run}], [Virus: ${item.metadata.virus.detected}], [Desc: ${item.metadata.virus.description}]`)
+                +row('Mime Type', item.metadata.mime)
+                +row('Encoding', item.metadata.encoding)
+                +row('Filetype', item.metadata.filetype)
+
+    section
+        h4 Storage Information
+        
+        table
+            tbody
+                +row('Store', item.references.storage.store)
+                +row('Bucket', item.references.storage.bucket)
+                +row('Folder', `Redacted`)
+                +row('Filename', item.references.storage.filename)
+
+    section
+        h4 Generated Thumb
+
+        img(src=`/thumb/${item.references.canonical.short}`)
+
+block scripts
+    script(src='/js/uploader.bundle.js')

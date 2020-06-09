@@ -11,6 +11,8 @@ const toArray = require('stream-to-array')
 const config = require('@femto-apps/config')
 const compression = require('compression')
 const redis = require('redis')
+const prettyBytes = require('pretty-bytes')
+const dateFormat = require('dateformat')
 const authenticationConsumer = require('@femto-apps/authentication-consumer')
 
 const Types = require('./types')
@@ -23,6 +25,7 @@ const Utils = require('./modules/Utils')
 const minioStorage = require('./modules/MinioMulterStorage')
 const ShareX = require('./modules/ShareX')
 const Archive = require('./modules/Archive')
+const ClamAV = require('./modules/ClamAV')
 
 const { wrap } = require('./modules/Profiling')
 
@@ -33,6 +36,8 @@ function ignoreAuth(req, res) {
 ;(async () => {
     const app = express()
     const port = config.get('port')
+
+    const clam = new ClamAV()
 
     const multer = Multer({
         storage: minioStorage({
@@ -275,6 +280,23 @@ function ignoreAuth(req, res) {
         await item.setCanonical(shortItem)
 
         res.json({ data: { short } })
+
+        console.log('scanning file')
+        clam.scan(originalName, await store.getStream()).then(async result => {
+            const virusResult = {
+                run: true,
+                description: result.Description
+            }
+
+            if (result.Status === 'FOUND') {
+                virusResult.detected = true
+            } else if (result.Status === 'OK') {
+                virusResult.detected = false
+            }
+
+            await item.setVirus(virusResult)
+            console.log(`updated file ${item.item._id} ${result.Status}: "${result.Description}"`)
+        })
     })
 
     app.use(wrap(express.static('public')))
@@ -282,6 +304,15 @@ function ignoreAuth(req, res) {
 
     app.get('/sharex/uploader.sxcu', ShareX.downloadUploader)
     app.get('/sharex/shortener.sxcu', ShareX.downloadShortener)
+
+    app.get(['/info/:item', '/info/:item/*'], Item.fromReq, async (req, res) => {
+        res.render('info', {
+            item: req.item.item.item,
+            page: { title: `Info :: ${config.get('title.suffix')}` },
+            prettyBytes,
+            dateFormat
+        })
+    })
 
     app.get(['/thumb/:item', '/thumb/:item/*'], Item.fromReq, async (req, res) => {
         req.item.thumb(req, res)

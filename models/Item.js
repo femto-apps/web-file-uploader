@@ -17,7 +17,12 @@ const ItemSchema = mongoose.Schema({
     filetype: { type: String },
     expiresAt: { type: Date },
     expired: { type: Boolean },
-    size: { type: Number, default: 0 }
+    size: { type: Number, default: 0 },
+    virus: {
+      run: { type: Boolean, default: false },
+      detected: { type: Boolean },
+      description: { type: String }
+    }
   },
   references: {
     storage: { type: mongoose.Schema.Types.ObjectId, ref: 'Store', autopopulate: true },

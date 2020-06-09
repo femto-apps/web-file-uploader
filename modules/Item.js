@@ -33,6 +33,11 @@ class Item {
         next()
     }
 
+    async setVirus(status) {
+        this.item.metadata.virus = status
+        await this.item.save()
+    }
+
     async setCanonical(shortItem) {
         this.item.references.canonical = shortItem.id()
         await this.item.save()

@@ -19,6 +19,9 @@
         accessKey: 6ML8SMC66BO2IMCZH9IY
         secretKey: zO21IgZpawthEK6DibBOthwMWMFqM7iWr0riGCYR
     }
+    clamav: {
+        url: http://localhost:9001
+    }
     session: {
         secret: 3a8glh3al85tgh3a538haga38g
     }

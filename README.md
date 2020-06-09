@@ -107,6 +107,15 @@ docker run -p 6379:6379 --name redis -v redisdata:/data -d redis redis-server --
 * [web-authentication-provider](https://github.com/femto-apps/web-authentication-provider)
 * [web-authentication-token-service](https://github.com/femto-apps/web-authentication-token-service)
 
+If virus scanning is enabled you need to install:
+
+* clamav
+```sh
+# the port is set to 9001 because 9000 is used by minio by default
+docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
+# this takes a while to start up, monitor progress with `docker logs clamav`
+```
+
 ### Installation
 
 1. Clone the repo

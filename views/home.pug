@@ -26,19 +26,20 @@ block main
 
                 #[span.comment # See more ways to upload #[a(href='https://github.com/femto-apps/web-file-uploader/wiki/Ways-to-Upload') here]]
                 #[#upload_container.hidden #[span.comment #[br]# Uploaded files]#[#uploads]]
-    section
-        h3 Temp Links:
-    section
-        a(href='/uploads') See your uploads
-        br
-        br
-        br
-    section
-        row
-            column(style='width:10%;')
-                p API Key:
-            column(style='width:90%;')
-                input#apikey.spoiler(readonly, value=key)
+    if user
+        section
+            h3 Temp Links:
+        section
+            a(href='/uploads') See your uploads
+            br
+            br
+            br
+        section
+            row
+                column(style='width:10%;')
+                    p API Key:
+                column(style='width:90%;')
+                    input#apikey.spoiler(readonly, value=key)
 
 block scripts
     script(src='/js/uploader.bundle.js')
