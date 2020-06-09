@@ -26,6 +26,7 @@ const minioStorage = require('./modules/MinioMulterStorage')
 const ShareX = require('./modules/ShareX')
 const Archive = require('./modules/Archive')
 const ClamAV = require('./modules/ClamAV')
+const Stats = require('./modules/Stats')
 
 const { wrap } = require('./modules/Profiling')
 
@@ -38,6 +39,7 @@ function ignoreAuth(req, res) {
     const port = config.get('port')
 
     const clam = new ClamAV()
+    const stats = new Stats()
 
     const multer = Multer({
         storage: minioStorage({

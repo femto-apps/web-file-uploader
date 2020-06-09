@@ -1,32 +1,24 @@
 const UserModel = require('../models/User')
 const ItemModel = require('../models/Item')
+const StatModel = require('../models/Stat')
+
+const config = require('@femto-apps/config')
 
 class Stats {
   constructor() {
-    this.stats = {
-      // counts of items
-      itemCount: 0,
-      userCount: 0,
-
-      // storage used
-      dataStored: 0,
-
-      // network used
-      bandwidth: 0,
-
-      // people viewed
-      views: 0, 
-    }
-
-    setTimeout(() => this.refresh(), 1)
-    setInterval(() => this.refresh(), 30 * 1000)
+    setInterval(() => {
+      this.update()
+    }, config.get('experimental.statsTimer'))
+    this.update()
   }
 
-  async refresh() {
-    this.stats.userCount = await UserModel.count()
-    this.stats.itemCount = await ItemModel.count()
+  async update() {
+    console.log('updating statistics')
 
-    this.stats.views = (await Item.aggregate([{ $match: {} }, {
+    const userCount = await UserModel.countDocuments()
+    const itemCount = await ItemModel.countDocuments()
+
+    const viewCount = (await ItemModel.aggregate([{ $match: {} }, {
       $group: {
         _id: null,
         total: {
@@ -35,14 +27,45 @@ class Stats {
       }
     }]))[0].total
 
-    this.stats.bandwidth = (await Item.aggregate([{ $match: {} }, {
+    const bandwidthUsed = (await ItemModel.aggregate([{ $match: {} }, {
       $group: {
         _id: null,
         total: {
-          $sum: { $multiply: ["$metadata.views", "$file.length"] }
+          $sum: { $multiply: ["$metadata.views", "$metadata.size"] }
         }
       }
     }]))[0].total
+
+    const user = new StatModel({
+      time: new Date(),
+      field: 'users',
+      value: userCount
+    })
+
+    const item = new StatModel({
+      time: new Date(),
+      field: 'items',
+      value: itemCount
+    })
+
+    const views = new StatModel({
+      time: new Date(),
+      field: 'views',
+      value: viewCount
+    })
+
+    const bandwidth = new StatModel({
+      time: new Date(),
+      field: 'bandwidth',
+      value: bandwidthUsed
+    })
+    
+    await Promise.all([
+      user.save(),
+      item.save(),
+      views.save(),
+      bandwidth.save()
+    ])
   }
 }
 
