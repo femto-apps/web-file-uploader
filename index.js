@@ -196,6 +196,10 @@ function ignoreAuth(req, res) {
     //     Archive.archive(res, items)
     // })
 
+    app.get('/stats', async (req, res) => [
+        res.send('Not implemented yet')
+    ])
+
     app.get('/uploads', async (req, res) => {
         if (!req.user) {
             res.send('Please login to see uploads')
@@ -206,6 +210,10 @@ function ignoreAuth(req, res) {
             .filter(item => item.item.metadata.filetype !== 'thumb')
             .filter(item => item.item.metadata.expired !== true)
         
+        // console.log(items.forEach(item => {
+        //     console.log(item.item.references)
+        // }))
+
         res.render('uploads', {
             page: { title: `Uploads :: ${config.get('title.suffix')}` },
             items

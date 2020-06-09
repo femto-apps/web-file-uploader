@@ -46,6 +46,9 @@ uppy.on('upload-success', (file, resp) => {
 const shortenButton = document.getElementById('shorten-url')
 shortenButton.addEventListener('click', async () => {
     const url = prompt('URL to Shorten')
+
+    if (url === null) return
+
     const resp = await fetch('/upload/url', {
         method: 'POST',
         headers: {

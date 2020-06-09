@@ -24,19 +24,12 @@ block main
                 #[span.comment # Upload from your terminal]
                 $ curl -F "upload=@'UPLOAD_PATH'" #[span= req.protocol + '://' + req.get('host') + '/upload']
 
-                #[span.comment # Upload using our alias]
-                $ curl #[span= req.protocol + '://' + req.get('host') + '/bash/bashrc'] >> ~/.bashrc
-                $ . ~/.bashrc
-                $ upload 'UPLOAD_PATH';
+                #[span.comment # See more ways to upload #[a(href='https://github.com/femto-apps/web-file-uploader/wiki/Ways-to-Upload') here]]
                 #[#upload_container.hidden #[span.comment #[br]# Uploaded files]#[#uploads]]
     section
         h3 Temp Links:
     section
         a(href='/uploads') See your uploads
-        br
-        a(href='/privacy') Current Privacy Policy
-        br
-        a(href='/terms') Current Terms
         br
         br
         br

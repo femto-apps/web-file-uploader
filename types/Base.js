@@ -20,11 +20,14 @@ const generateThumb = memoize(async item => {
     ctx.textAlign = 'center';
 
     let name = await item.getName()
-    if (name.length > 19) {
-        name = name.substring(0, 16) + '...'
-    }
 
-    ctx.fillText(name, 128, 220, 242)
+    if (name) {
+        if (name.length > 19) {
+            name = name.substring(0, 16) + '...'
+        }
+
+        ctx.fillText(name, 128, 220, 242)
+    }
 
     const stream = canvas.createPNGStream()
     await item.setThumb(stream)

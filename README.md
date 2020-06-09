@@ -104,6 +104,8 @@ docker run -p 27017:27017 --name mongo -v mongodata:/data/db -d mongo
 docker volume create --name=redisdata
 docker run -p 6379:6379 --name redis -v redisdata:/data -d redis redis-server --appendonly yes
 ```
+* [web-authentication-provider](https://github.com/femto-apps/web-authentication-provider)
+* [web-authentication-token-service](https://github.com/femto-apps/web-authentication-token-service)
 
 ### Installation
 

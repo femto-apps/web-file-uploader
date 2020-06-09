@@ -1,6 +1,7 @@
 const memoize = require('memoizee')
 const puppeteer = require('puppeteer')
 const sharp = require('sharp')
+const validUrl = require('valid-url')
 const smartcrop = require('smartcrop-sharp')
 
 const Base = require('./Base')
@@ -13,12 +14,18 @@ const generateThumb = memoize(async item => {
     // We don't know what this file is, so we have no idea what the thumb should look like.
     const url = await item.getName()
 
+    if (!validUrl.isWebUri(url)) {
+        return Base.baseThumb(item)
+    }
+
+    let body
+
     try {
         const browser = await puppeteer.launch()
         const page = await browser.newPage()
         await page.setViewport({ width: 1920, height: 1080 })
         await page.goto(url)
-        const body = await page.screenshot()
+        body = await page.screenshot()
         await browser.close()
     } catch(e) {
         console.log(e)
