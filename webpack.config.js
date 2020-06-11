@@ -2,10 +2,13 @@ const path = require('path')
 
 module.exports = {
     mode: 'development',
-    entry: './src/uploader.js',
+    entry: {
+        uploader: './src/uploader.js',
+        stats: './src/stats.js'
+    },
     output: {
         path: path.resolve(__dirname, 'public/js'),
-        filename: 'uploader.bundle.js'
+        filename: '[name].bundle.js'
     },
     module: {
         rules: [

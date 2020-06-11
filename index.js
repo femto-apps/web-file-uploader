@@ -203,9 +203,12 @@ function ignoreAuth(req, res) {
     //     Archive.archive(res, items)
     // })
 
-    app.get('/stats', async (req, res) => [
-        res.send('Not implemented yet')
-    ])
+    app.get('/stats', async (req, res) => {
+        res.render('stats', {
+            stats: await stats.getRecent(365),
+            page: { title: `Stats :: ${config.get('title.suffix')}` }
+        })
+    })
 
     app.get('/uploads', async (req, res) => {
         if (!req.user) {

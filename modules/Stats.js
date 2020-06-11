@@ -12,6 +12,33 @@ class Stats {
     this.update()
   }
 
+  async getRecent(time) {
+    const [users, items, views, bandwidth] = await Promise.all([
+      this.getRecentByType('users', time),
+      this.getRecentByType('items', time),
+      this.getRecentByType('views', time),
+      this.getRecentByType('bandwidth', time)
+    ])
+
+    return { users, items, views, bandwidth }
+  }
+
+  // time is scale in days
+  async getRecentByType(type, time) {
+    const now = new Date()
+    now.setDate(now.getDate() - time)
+
+    const stats = await StatModel.find({
+      time: { $gte: now },
+      field: type,
+    })
+
+    return stats.map(stat => ({
+      time: stat.time,
+      value: stat.value
+    }))
+  }
+
   async update() {
     console.log('updating statistics')
 

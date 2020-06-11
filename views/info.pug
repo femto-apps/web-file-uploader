@@ -24,7 +24,7 @@ block main
 
     section
         h4 Developer Information
-        
+
         table
             tbody
                 +row('Extracted Filename', item.name.filename)
@@ -34,20 +34,18 @@ block main
                 +row('Encoding', item.metadata.encoding)
                 +row('Filetype', item.metadata.filetype)
 
-    section
-        h4 Storage Information
-        
-        table
-            tbody
-                +row('Store', item.references.storage.store)
-                +row('Bucket', item.references.storage.bucket)
-                +row('Folder', `Redacted`)
-                +row('Filename', item.references.storage.filename)
+    if item.references && item.references.storage
+        section
+            h4 Storage Information
+
+            table
+                tbody
+                    +row('Store', item.references.storage.store)
+                    +row('Bucket', item.references.storage.bucket)
+                    +row('Folder', `Redacted`)
+                    +row('Filename', item.references.storage.filename)
 
     section
         h4 Generated Thumb
 
         img(src=`/thumb/${item.references.canonical.short}`)
-
-block scripts
-    script(src='/js/uploader.bundle.js')
