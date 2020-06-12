@@ -51,6 +51,10 @@ class Item {
         return this.item.metadata.expired
     }
 
+    async getVirus() {
+        return this.item.metadata.virus
+    }
+
     async getMime() {
         return this.item.metadata.mime
     }

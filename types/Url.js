@@ -62,9 +62,8 @@ class Url extends Base {
     }
 
     async serve(req, res) {
-        if (await this.getExpired()) {
-            return res.send('This item has expired.')
-        }
+        if (await this.checkDead(req, res)) return
+
 
         res.redirect(await this.getName())
         await this.incrementViews()

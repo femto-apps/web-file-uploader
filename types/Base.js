@@ -70,10 +70,21 @@ class Base {
         }
     }
 
-    async serve(req, res) {
+    async checkDead(req, res) {
         if (await this.getExpired()) {
-            return res.send('This item has expired.')
+            res.send('This item has expired.')
+            return true
         }
+
+        const virus = await this.getVirus()
+        if (virus.detected) {
+            res.send(`This item was detected as a virus and removed.  We thought it was: ${virus.description}`)
+            return true
+        }
+    }
+
+    async serve(req, res) {
+        if (await this.checkDead(req, res)) return
 
         res.set('Content-Disposition', await this.getFileName())
         res.set('Content-Type', await this.getMime())
@@ -105,9 +116,8 @@ class Base {
     }
 
     async thumb(req, res) {
-        if (await this.getExpired()) {
-            return res.send('This item has expired.')
-        }
+        if (await this.checkDead(req, res)) return
+
 
         if (!(await this.hasThumb())) {
             console.log(`Generating thumb for ${await this.item.id()}`)
