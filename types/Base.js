@@ -76,7 +76,7 @@ class Base {
             return true
         }
 
-        const virus = await this.getVirus()
+        const virus = await this.item.getVirus()
         if (virus.detected) {
             res.send(`This item was detected as a virus and removed.  We thought it was: ${virus.description}`)
             return true
