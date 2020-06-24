@@ -37,9 +37,11 @@ mongoose.connect(config.get('mongo.uri') + config.get('mongo.db'), {
     useCreateIndex: true
 })
 
-const MinimalItem = minimalItemConnection.model('Item', {})
+const MinimalItem = minimalItemConnection.model('Item', { strict: false })
 
 const client = new Minio.Client(minioOptions.minio)
+
+const pause = t => new Promise(resolve => setTimeout(resolve, t))
 
 async function convertItem(original) {
     original = JSON.parse(JSON.stringify(original))
@@ -56,8 +58,20 @@ async function convertItem(original) {
 
     console.log('grabbing data stream')
     // download file and reupload it to minio
-    const dataStream = await fetch(`http://localhost:7983/${original.name.short}`)
-        .then(res => res.body)
+
+    let dataStream
+
+    try {
+        const dataStream = await fetch(`http://localhost:7983/${original.name.short}`)
+            .then(res => res.body)
+    } catch(e) {
+        original.failed = true
+        await original.save()
+        console.log('pausing for 5s')
+        await pause(5000)
+
+        return 'failed'
+    }
 
     console.log(dataStream)
 
@@ -127,7 +141,7 @@ async function convertItem(original) {
 }
 
 async function init() {
-    const items = await MinimalItem.find({ 'type.long': { '$ne': 'url' } })
+    const items = await MinimalItem.find({ 'type.long': { '$ne': 'url' }, 'transfer': { '$ne': 'failed' } })
 
     for (let item of items) {
         await convertItem(item)
