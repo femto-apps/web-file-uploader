@@ -14,13 +14,10 @@ mongoose.connect(config.get('mongo.uri') + config.get('mongo.db'), {
 })
 
 async function init() {
-    const users = await UserModel.find()
+    const items = await ItemModel.find({ 'user.ip': { $exists: true } })
 
-    for (let user of users) {
-        console.log(`=== ${user._id} (base: ${user.user}) ===`)
-        for (let item of await ItemModel.find({ 'user._id': user.user })) {
-            console.log(`${item._id} - [name: ${item.name.original}] [filetype: ${item.metadata.filetype}]`)
-        }
+    for (let item of items) {
+        console.log(`${item._id} - [name: ${item.name.original}] [filetype: ${item.metadata.filetype}]`)
     }
 
     mongoose.connection.close()

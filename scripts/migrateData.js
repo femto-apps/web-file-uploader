@@ -127,7 +127,7 @@ async function convertItem(original) {
 }
 
 async function init() {
-    const items = await MinimalItem.find()
+    const items = await MinimalItem.find({ 'type.long': { '$ne': 'url' } })
 
     for (let item of items) {
         await convertItem(item)
