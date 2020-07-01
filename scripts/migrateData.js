@@ -120,7 +120,7 @@ async function convertItem(original) {
         metadata: {
             createdAt: original.createdAt,
             updatedAt: original.updatedAt,
-            mime: original.file.mime,
+            mime: original.file.mime || 'application/octet-stream',
             encoding: original.file.encoding,
             filetype: data.filetype,
             views: original.views
