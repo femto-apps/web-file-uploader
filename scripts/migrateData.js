@@ -64,6 +64,7 @@ async function convertItem(original) {
     try {
         const dataStream = await fetch(`http://localhost:7983/${original.name.short}`)
             .then(res => res.body)
+            .catch(e => { throw new Error('e') })
     } catch(e) {
         original.failed = true
         await original.save()
