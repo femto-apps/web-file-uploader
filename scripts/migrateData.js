@@ -60,7 +60,7 @@ async function convertItem(original) {
     console.log('grabbing data stream')
     // download file and reupload it to minio
 
-    const fetchRepsonse = await fetch(`http://localhost:7983/${original.name.short}`)
+    const fetchResponse = await fetch(`http://localhost:7983/${original.name.short}`)
         .catch(e => {
             return 'failed'
         })
@@ -73,7 +73,7 @@ async function convertItem(original) {
 
         return 'failed'
     }
-    const dataStream = await res.body
+    const dataStream = await fetchResponse.body
     console.log(dataStream)
 
     console.log('finished fetch')
