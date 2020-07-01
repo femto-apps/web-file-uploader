@@ -44,6 +44,7 @@ const client = new Minio.Client(minioOptions.minio)
 const pause = t => new Promise(resolve => setTimeout(resolve, t))
 
 async function convertItem(original) {
+    const trueOriginal = original
     original = JSON.parse(JSON.stringify(original))
 
     if (await newShort.get(original.name.short)) {
@@ -66,8 +67,8 @@ async function convertItem(original) {
             .then(res => res.body)
             .catch(e => { throw new Error('e') })
     } catch(e) {
-        original.failed = true
-        await original.save()
+        trueOriginal.failed = true
+        await trueOriginal.save()
         console.log('pausing for 5s')
         await pause(5000)
 
