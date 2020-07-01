@@ -37,7 +37,7 @@ mongoose.connect(config.get('mongo.uri') + config.get('mongo.db'), {
     useCreateIndex: true
 })
 
-const MinimalItem = minimalItemConnection.model('Item', { strict: false })
+const MinimalItem = minimalItemConnection.model('Item', new mongoose.Schema({ transfer: String }, { strict: false }))
 
 const client = new Minio.Client(minioOptions.minio)
 
@@ -66,7 +66,8 @@ async function convertItem(original) {
         })
 
     if (fetchResponse === 'failed' || !fetchResponse.ok) {
-        trueOriginal.failed = true
+        trueOriginal.transfer = 'failed'
+        trueOriginal.markModified('transfer')
         await trueOriginal.save()
         console.log('pausing for 5s')
         await pause(5000)
@@ -74,7 +75,7 @@ async function convertItem(original) {
         return 'failed'
     }
     const dataStream = await fetchResponse.body
-    console.log(dataStream)
+    // console.log(dataStream)
 
     console.log('finished fetch')
 
@@ -139,6 +140,10 @@ async function convertItem(original) {
     console.log(shortItem)
 
     console.log('finished')
+
+    trueOriginal.transfer = 'success'
+    trueOriginal.markModified('transfer')
+    await trueOriginal.save()
 }
 
 async function init() {
