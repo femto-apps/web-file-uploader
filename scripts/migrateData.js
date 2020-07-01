@@ -147,7 +147,7 @@ async function convertItem(original) {
 }
 
 async function init() {
-    const items = await MinimalItem.find({ 'type.long': { '$ne': 'url' }, 'transfer': { '$ne': 'failed' } })
+    const items = await MinimalItem.find({ 'file.filetype': { '$ne': 'url' }, 'type.long': { '$ne': 'url' }, 'transfer': { '$ne': 'failed' } })
 
     for (let item of items) {
         await convertItem(item)
