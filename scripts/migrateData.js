@@ -61,7 +61,11 @@ async function convertItem(original) {
     // download file and reupload it to minio
 
     const fetchRepsonse = await fetch(`http://localhost:7983/${original.name.short}`)
-    if (!fetchResponse.ok) {
+        .catch(e => {
+            return 'failed'
+        })
+
+    if (fetchResponse === 'failed' || !fetchResponse.ok) {
         trueOriginal.failed = true
         await trueOriginal.save()
         console.log('pausing for 5s')
