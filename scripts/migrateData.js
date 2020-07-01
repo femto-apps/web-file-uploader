@@ -5,6 +5,7 @@ const fetch = require('node-fetch')
 const config = require('@femto-apps/config')
 const mongoose = require('mongoose')
 const toArray = require('stream-to-array')
+const pLimit = require('p-limit')
 
 const newUser = require('../modules/User.js')
 const newCollection = require('../modules/Collection.js')
@@ -149,9 +150,8 @@ async function convertItem(original) {
 async function init() {
     const items = await MinimalItem.find({ 'file.filetype': { '$ne': 'url' }, 'type.long': { '$ne': 'url' }, 'transfer': { '$ne': 'failed' } })
 
-    for (let item of items) {
-        await convertItem(item)
-    }
+    const limit = pLimit(5)
+    await Promise.all(items.map(item => limit(() => convertItem(item))))
 
     console.log('disconnecting')
 
