@@ -9,7 +9,7 @@ class ShareX {
     res.send(JSON.stringify({
       Name: 'Femto Uploader',
       DestinationType: 'ImageUploader, TextUploader, FileUploader',
-      RequestURL: `${config.get('url.origin')}/upload/multipart`,
+      RequestURL: `${config.get('url.origin')}upload/multipart`,
       FileFormName: 'upload',
       Arguments: {
         apiKey: req.user ? req.user.getApiKey() : undefined
@@ -26,7 +26,7 @@ class ShareX {
     res.send(JSON.stringify({
       Name: config.get('title.shortener'),
       DestinationType: 'URLShortener',
-      RequestURL: `${config.get('url.origin')}/upload/url`,
+      RequestURL: `${config.get('url.origin')}upload/url`,
       Arguments: {
         apiKey: req.user ? req.user.getApiKey() : undefined,
         text: '$input$'
