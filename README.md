@@ -163,7 +163,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ## Contact
 
 Alexander Craggs - uploader@femto.host  
-Dimi3 - https://github.com/dimi3
+Dimi3 - https://github.com/Owkoot
 
 Project Link: [https://github.com/femto-apps/web-file-uploader](https://github.com/femto-apps/web-file-uploader)
 
