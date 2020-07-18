@@ -162,7 +162,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Alexander Craggs - uploader@femto.host
+Alexander Craggs - uploader@femto.host  
 Dimi3 - https://github.com/dimi3
 
 Project Link: [https://github.com/femto-apps/web-file-uploader](https://github.com/femto-apps/web-file-uploader)
