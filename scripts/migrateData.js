@@ -44,6 +44,49 @@ const client = new Minio.Client(minioOptions.minio)
 
 const pause = t => new Promise(resolve => setTimeout(resolve, t))
 
+async function convertUrl(original) {
+    const trueOriginal = original
+    original = JSON.parse(JSON.stringify(original))
+
+    if (await newShort.get(original.name.short)) {
+        console.log('already handled', original._id, original.name.short)
+        return
+    }
+    
+    console.log('start folder')
+    const folder = (await newCollection.fromReq({
+        user: original.user._id ? new newUser({ _id: original.user._id }) : undefined,
+        ip: original.user.ip
+    })).path
+    console.log('end folder')
+
+    console.log('detected type')
+
+    const item = await newItemModel.create({
+        name: {
+            original: original.name.original,
+        },
+        metadata: {
+            filetype: 'url'
+        },
+        user: { _id: original.user._id, ip: original.user.ip }
+    })
+
+    console.log('created item')
+
+    const shortItem = await newShort.createReference(original.name.short, item.item)
+    await item.setCanonical(shortItem)
+
+    console.log(item)
+    console.log(shortItem)
+
+    console.log('finished')
+
+    trueOriginal.transfer = 'success'
+    trueOriginal.markModified('transfer')
+    await trueOriginal.save()
+}
+
 async function convertItem(original) {
     const trueOriginal = original
     original = JSON.parse(JSON.stringify(original))

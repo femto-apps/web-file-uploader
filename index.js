@@ -13,6 +13,7 @@ const compression = require('compression')
 const redis = require('redis')
 const prettyBytes = require('pretty-bytes')
 const dateFormat = require('dateformat')
+const cors = require('cors')
 const authenticationConsumer = require('@femto-apps/authentication-consumer')
 
 const Types = require('./types')
@@ -230,7 +231,8 @@ function ignoreAuth(req, res) {
         })
     })
 
-    app.post('/upload/url', async (req, res) => {
+    app.options('/upload/url', cors())
+    app.post('/upload/url', cors(), async (req, res) => {
         req.user = await User.fromReq(req)
         const expiresAt = Utils.parseExpiry(req.body.expiry)
         const item = await Item.create({
@@ -251,7 +253,8 @@ function ignoreAuth(req, res) {
         res.json({ data: { short } })
     })
 
-    app.post('/upload/multipart', multer, async (req, res) => {
+    app.options('/upload/multipart', cors())
+    app.post('/upload/multipart', cors(), multer, async (req, res) => {
         req.user = await User.fromReq(req)
 
         const originalName = req.file.originalname
