@@ -22,7 +22,7 @@ class Types {
         }
 
         // We first pass it through some initial checks
-       const type = fileType(bytes)
+       const type = await fileType.fromBuffer(bytes)
 
         if (type && type.mime) {
             data.mime = type.mime

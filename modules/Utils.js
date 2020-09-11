@@ -8,7 +8,7 @@ class Utils {
             return undefined
         }
 
-        const expiry = Number(req.body.expiry)
+        const expiry = Number(relativeExpiry)
 
         if (expiry < 0 || expiry > 60 * 60 * 24 * 365 * 1000) {
             expiresAt = undefined

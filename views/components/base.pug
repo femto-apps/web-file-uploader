@@ -20,6 +20,7 @@ html(lang='en')
         meta(name='msapplication-TileColor', content='#9f00a7')
         meta(name='theme-color', content='#000000')
         meta(name='viewport' content='width=device-width, initial-scale=1')
+        block head
 
     body
         container
@@ -31,8 +32,12 @@ html(lang='en')
             buffer
 
             footer
-                section 
-                    | The source for this website is available #[a(href='https://github.com/femto-apps/web-file-uploader') here]
-                    | under a #[a(href='https://github.com/femto-apps/web-file-uploader/blob/master/LICENSE') MIT] license.
+                section.
+                    #[a(href='https://github.com/femto-apps/web-file-uploader') Source] |
+                    #[a(href='/privacy') Privacy] |
+                    #[a(href='/terms') Terms] |
+                    #[a(href='/stats') Stats] |
+                    #[a(href='mailto:upload_abuse@femto.host') Report] |
+                    #[a(href='/discord') Discord]
 
         block scripts

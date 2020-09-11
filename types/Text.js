@@ -4,7 +4,7 @@ const fs = require('fs').promises
 const tmp = require('tmp')
 const resolvePath = require('resolve-path')
 const execa = require('execa')
-const uuidv4 = require('uuid/v4')
+const { v4: uuidv4 } = require('uuid')
 const sharp = require('sharp')
 const smartcrop = require('smartcrop-sharp')
 
@@ -16,14 +16,17 @@ const name = 'text'
 const tempDir = tmp.dirSync()
 
 const generateThumb = memoize(async item => {
-  // We don't know what this file is, so we have no idea what the thumb should look like.
-  // 256, 256 smart crop
-  const itemBuffer = await Utils.getFirstLines(await item.item.getItemStream(), 12)
-  const tempPath = resolvePath(tempDir.name, await item.getName())
+  console.log('Generating text item thumbnail for', item)
 
   const uuid = uuidv4()
 
+  // We don't know what this file is, so we have no idea what the thumb should look like.
+  // 256, 256 smart crop
+  const itemBuffer = await Utils.getFirstLines(await item.item.getItemStream(), 12)
+  const tempPath = resolvePath(tempDir.name, (await item.getName()) + uuid)
+
   await fs.writeFile(tempPath, itemBuffer, 'utf-8')
+
   const {stdout, stderr} = await execa('carbon-now', ['-h', tempPath, '-t', uuid])
   await fs.rename(`${uuid}.png`, `${tempPath}.png`)
   const body = await fs.readFile(`${tempPath}.png`)

@@ -20,11 +20,14 @@ const generateThumb = memoize(async item => {
     ctx.textAlign = 'center';
 
     let name = await item.getName()
-    if (name.length > 19) {
-        name = name.substring(0, 16) + '...'
-    }
 
-    ctx.fillText(name, 128, 220, 242)
+    if (name) {
+        if (name.length > 19) {
+            name = name.substring(0, 16) + '...'
+        }
+
+        ctx.fillText(name, 128, 220, 242)
+    }
 
     const stream = canvas.createPNGStream()
     await item.setThumb(stream)
@@ -67,10 +70,21 @@ class Base {
         }
     }
 
-    async serve(req, res) {
+    async checkDead(req, res) {
         if (await this.getExpired()) {
-            return res.send('This item has expired.')
+            res.send('This item has expired.')
+            return true
         }
+
+        const virus = await this.item.getVirus()
+        if (virus.detected) {
+            res.send(`This item was detected as a virus and removed.  We thought it was: ${virus.description}`)
+            return true
+        }
+    }
+
+    async serve(req, res) {
+        if (await this.checkDead(req, res)) return
 
         res.set('Content-Disposition', await this.getFileName())
         res.set('Content-Type', await this.getMime())
@@ -102,9 +116,8 @@ class Base {
     }
 
     async thumb(req, res) {
-        if (await this.getExpired()) {
-            return res.send('This item has expired.')
-        }
+        if (await this.checkDead(req, res)) return
+
 
         if (!(await this.hasThumb())) {
             console.log(`Generating thumb for ${await this.item.id()}`)
@@ -152,3 +165,4 @@ class Base {
 }
 
 module.exports = Base
+module.exports.baseThumb = generateThumb

@@ -6,10 +6,14 @@ const Multer = require('multer')
 const mongoose = require('mongoose')
 const express = require('express')
 const morgan = require('morgan')
-const uuidv4 = require('uuid/v4')
+const { v4: uuidv4 } = require('uuid')
 const toArray = require('stream-to-array')
 const config = require('@femto-apps/config')
 const compression = require('compression')
+const redis = require('redis')
+const prettyBytes = require('pretty-bytes')
+const dateFormat = require('dateformat')
+const cors = require('cors')
 const authenticationConsumer = require('@femto-apps/authentication-consumer')
 
 const Types = require('./types')
@@ -21,6 +25,9 @@ const Collection = require('./modules/Collection')
 const Utils = require('./modules/Utils')
 const minioStorage = require('./modules/MinioMulterStorage')
 const ShareX = require('./modules/ShareX')
+const Archive = require('./modules/Archive')
+const ClamAV = require('./modules/ClamAV')
+const Stats = require('./modules/Stats')
 
 const { wrap } = require('./modules/Profiling')
 
@@ -32,6 +39,9 @@ function ignoreAuth(req, res) {
     const app = express()
     const port = config.get('port')
 
+    const clam = new ClamAV()
+    const stats = new Stats()
+
     const multer = Multer({
         storage: minioStorage({
             minio: {
@@ -41,7 +51,7 @@ function ignoreAuth(req, res) {
                 accessKey: config.get('minio.accessKey'),
                 secretKey: config.get('minio.secretKey')
             },
-            bucket: (req, file) => 'items',
+            bucket: (req, file) => config.get('minio.itemBucket'),
             folder: async (req, file) => {
                 return (await Collection.fromReq(req)).path
             },
@@ -74,8 +84,10 @@ function ignoreAuth(req, res) {
 
         session({
             store: new RedisStore({
-                host: config.get('redis.host'),
-                port: config.get('redis.port')
+                client: redis.createClient({
+                    host: config.get('redis.host'),
+                    port: config.get('redis.port')
+                })
             }),
             secret: config.get('session.secret'),
             resave: false,
@@ -134,11 +146,11 @@ function ignoreAuth(req, res) {
 
         if (res.locals.auth) {
             if (req.user) {
-                links.push({ title: 'Logout', href: res.locals.auth.getLogout(`${req.protocol}://${req.get('host')}${req.originalUrl}`) })
+                links.push({ title: 'Logout', href: res.locals.auth.getLogout(`${config.get('authenticationConsumer.endpoint')}${req.originalUrl}`) })
 
                 res.locals.user = req.user
             } else {
-                links.push({ title: 'Login', href: res.locals.auth.getLogin(`${req.protocol}://${req.get('host')}${req.originalUrl}`) })
+                links.push({ title: 'Login', href: res.locals.auth.getLogin(`${config.get('authenticationConsumer.endpoint')}w${req.originalUrl}`) })
             }
         }
 
@@ -174,6 +186,31 @@ function ignoreAuth(req, res) {
         })
     })
 
+    // app.get('/export', async (req, res) => {
+    //     if (!req.user) {
+    //         res.send('Please login to export your uploads')
+    //     }
+
+    //     const collection = await Collection.fromReq(req)
+    //     const items = (await collection.list())
+    //         .filter(item => item.item.metadata.filetype !== 'thumb')
+    //         .filter(item => item.item.metadata.expired !== true)
+
+    //     res.set('Content-Disposition', `filename="femto_export.zip"`)
+    //     res.set('Content-Type', 'application/zip')
+
+    //     console.log('hey')
+
+    //     Archive.archive(res, items)
+    // })
+
+    app.get('/stats', async (req, res) => {
+        res.render('stats', {
+            stats: await stats.getRecent(365),
+            page: { title: `Stats :: ${config.get('title.suffix')}` }
+        })
+    })
+
     app.get('/uploads', async (req, res) => {
         if (!req.user) {
             res.send('Please login to see uploads')
@@ -184,13 +221,18 @@ function ignoreAuth(req, res) {
             .filter(item => item.item.metadata.filetype !== 'thumb')
             .filter(item => item.item.metadata.expired !== true)
         
+        // console.log(items.forEach(item => {
+        //     console.log(item.item.references)
+        // }))
+
         res.render('uploads', {
             page: { title: `Uploads :: ${config.get('title.suffix')}` },
             items
         })
     })
 
-    app.post('/upload/url', async (req, res) => {
+    app.options('/upload/url', cors())
+    app.post('/upload/url', cors(), async (req, res) => {
         req.user = await User.fromReq(req)
         const expiresAt = Utils.parseExpiry(req.body.expiry)
         const item = await Item.create({
@@ -211,7 +253,8 @@ function ignoreAuth(req, res) {
         res.json({ data: { short } })
     })
 
-    app.post('/upload/multipart', multer, async (req, res) => {
+    app.options('/upload/multipart', cors())
+    app.post('/upload/multipart', cors(), multer, async (req, res) => {
         req.user = await User.fromReq(req)
 
         const originalName = req.file.originalname
@@ -245,6 +288,23 @@ function ignoreAuth(req, res) {
         await item.setCanonical(shortItem)
 
         res.json({ data: { short } })
+
+        console.log('scanning file')
+        clam.scan(originalName, await store.getStream()).then(async result => {
+            const virusResult = {
+                run: true,
+                description: result.Description
+            }
+
+            if (result.Status === 'FOUND') {
+                virusResult.detected = true
+            } else if (result.Status === 'OK') {
+                virusResult.detected = false
+            }
+
+            await item.setVirus(virusResult)
+            console.log(`updated file ${item.item._id} ${result.Status}: "${result.Description}"`)
+        })
     })
 
     app.use(wrap(express.static('public')))
@@ -252,6 +312,15 @@ function ignoreAuth(req, res) {
 
     app.get('/sharex/uploader.sxcu', ShareX.downloadUploader)
     app.get('/sharex/shortener.sxcu', ShareX.downloadShortener)
+
+    app.get(['/info/:item', '/info/:item/*'], Item.fromReq, async (req, res) => {
+        res.render('info', {
+            item: req.item.item.item,
+            page: { title: `Info :: ${config.get('title.suffix')}` },
+            prettyBytes,
+            dateFormat
+        })
+    })
 
     app.get(['/thumb/:item', '/thumb/:item/*'], Item.fromReq, async (req, res) => {
         req.item.thumb(req, res)

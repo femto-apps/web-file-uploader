@@ -1,0 +1,47 @@
+extends components/base
+
+mixin row(header, value)
+  tr
+    th= header
+    td= value
+
+block main
+    section
+        center
+            p
+                h3 Usage Statistics
+
+    blockquote To conserve CPU cycles, some of these statistics are estimates.
+
+    section
+        h4 Usage
+
+        h6 Users
+        .ct-chart#users-chart
+
+        h6 Items
+        .ct-chart#items-chart
+
+        h6 Views
+        .ct-chart#views-chart
+
+        h6 Bandwidth
+        .ct-chart#bandwidth-chart
+
+block head
+    link(rel="stylesheet", href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css")
+    style.
+        .ct-label, .ct-grid {
+            color: #b9b9b9 !important;
+            stroke: #b9b9b9 !important;
+        }
+
+block scripts
+    script.
+        var users = !{JSON.stringify(stats.users)}
+        var items = !{JSON.stringify(stats.items)}
+        var views = !{JSON.stringify(stats.views)}
+        var bandwidth = !{JSON.stringify(stats.bandwidth)}
+
+    script(src='//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js')
+    script(src='/js/stats.bundle.js')

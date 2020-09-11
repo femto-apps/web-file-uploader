@@ -1,5 +1,5 @@
 const _ = require('lodash')
-const uuidv4 = require('uuid/v4')
+const { v4: uuidv4 } = require('uuid')
 const path = require('path')
 
 const ItemModel = require('../models/Item')
@@ -33,6 +33,11 @@ class Item {
         next()
     }
 
+    async setVirus(status) {
+        this.item.metadata.virus = status
+        await this.item.save()
+    }
+
     async setCanonical(shortItem) {
         this.item.references.canonical = shortItem.id()
         await this.item.save()
@@ -44,6 +49,10 @@ class Item {
 
     async getExpired() {
         return this.item.metadata.expired
+    }
+
+    async getVirus() {
+        return this.item.metadata.virus
     }
 
     async getMime() {

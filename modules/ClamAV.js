@@ -1,20 +1,24 @@
-const NodeClam = require('clamscan')
+const FormData = require('form-data')
+const config = require('@femto-apps/config')
+const fetch = require('node-fetch')
+const hjson = require('hjson')
 
 class ClamAV {
     constructor() {
-        this.scan = new NodeClam().init({
-            clamdscan: {
-                socket: '/var/run/clamd.scan/clamd.sock',
-                host: '127.0.0.1',
-                port: 3310
-            }
-        })
+
     }
 
-    async scan(stream) {
-        const infected = await this.scan.scan_stream(stream)
+    async scan(filename, stream) {
+        const form = new FormData()
+        form.append('file', stream, { filename })
 
-        return infected
+        return fetch(`${config.get('clamav.url')}/scan`, {
+            method: 'POST',
+            body: form,
+            headers: form.getHeaders()
+        })
+            .then(res => res.text())
+            .then(res => hjson.parse(res))
     }
 }
 

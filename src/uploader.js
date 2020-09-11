@@ -24,7 +24,8 @@ const uppy = Uppy({
         endpoint: '/upload/multipart', 
         fieldName: 'upload',
         getResponseData(text, resp) {
-            return { url: location.href + JSON.parse(text).data.short }
+            const response = JSON.parse(text)
+            return { short: response.data.short, url: location.href + response.data.short }
         }
     })
 
@@ -37,12 +38,17 @@ uppy.on('upload-success', (file, resp) => {
 
     document.getElementById('upload_container').style.display = 'block'
     document.getElementById('uploads').innerHTML +=
-        `<a class='link' href='${resp.body.url}'>${resp.body.url}</a> <span class='comment'># ${file.data.name} (<a class='link' target='_blank' href='/info/${resp.body.url}'>info</a>)</span><br>`
+        `<a class='link' href='${resp.body.url}'>${resp.body.url}</a> <span class='comment'># ${file.data.name} (<a class='link' target='_blank' href='/info/${resp.body.short}'>info</a>)</span><br>`
+
+    console.log('resp', resp)
 })
 
 const shortenButton = document.getElementById('shorten-url')
 shortenButton.addEventListener('click', async () => {
     const url = prompt('URL to Shorten')
+
+    if (url === null) return
+
     const resp = await fetch('/upload/url', {
         method: 'POST',
         headers: {
@@ -56,7 +62,7 @@ shortenButton.addEventListener('click', async () => {
     document.getElementById('uploads').innerHTML += 
         `<a class='link' href='/${resp.data.short}'>${window.location.origin}/${resp.data.short}</a> <span class='comment'># ${url} (<a class='link' target='_blank' href='/info/${resp.data.short}'>info</a>)</span>`
 
-    console.log(resp)
+    console.log('resp', resp)
 })
 
 const apikey = document.getElementById('apikey')

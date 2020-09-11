@@ -1,32 +1,51 @@
 const UserModel = require('../models/User')
 const ItemModel = require('../models/Item')
+const StatModel = require('../models/Stat')
+
+const config = require('@femto-apps/config')
 
 class Stats {
   constructor() {
-    this.stats = {
-      // counts of items
-      itemCount: 0,
-      userCount: 0,
-
-      // storage used
-      dataStored: 0,
-
-      // network used
-      bandwidth: 0,
-
-      // people viewed
-      views: 0, 
-    }
-
-    setTimeout(() => this.refresh(), 1)
-    setInterval(() => this.refresh(), 30 * 1000)
+    setInterval(() => {
+      this.update()
+    }, config.get('experimental.statsTimer'))
+    this.update()
   }
 
-  async refresh() {
-    this.stats.userCount = await UserModel.count()
-    this.stats.itemCount = await ItemModel.count()
+  async getRecent(time) {
+    const [users, items, views, bandwidth] = await Promise.all([
+      this.getRecentByType('users', time),
+      this.getRecentByType('items', time),
+      this.getRecentByType('views', time),
+      this.getRecentByType('bandwidth', time)
+    ])
 
-    this.stats.views = (await Item.aggregate([{ $match: {} }, {
+    return { users, items, views, bandwidth }
+  }
+
+  // time is scale in days
+  async getRecentByType(type, time) {
+    const now = new Date()
+    now.setDate(now.getDate() - time)
+
+    const stats = await StatModel.find({
+      time: { $gte: now },
+      field: type,
+    })
+
+    return stats.map(stat => ({
+      time: stat.time,
+      value: stat.value
+    }))
+  }
+
+  async update() {
+    console.log('updating statistics')
+
+    const userCount = await UserModel.countDocuments()
+    const itemCount = await ItemModel.countDocuments()
+
+    const viewCount = (await ItemModel.aggregate([{ $match: {} }, {
       $group: {
         _id: null,
         total: {
@@ -35,14 +54,45 @@ class Stats {
       }
     }]))[0].total
 
-    this.stats.bandwidth = (await Item.aggregate([{ $match: {} }, {
+    const bandwidthUsed = (await ItemModel.aggregate([{ $match: {} }, {
       $group: {
         _id: null,
         total: {
-          $sum: { $multiply: ["$metadata.views", "$file.length"] }
+          $sum: { $multiply: ["$metadata.views", "$metadata.size"] }
         }
       }
     }]))[0].total
+
+    const user = new StatModel({
+      time: new Date(),
+      field: 'users',
+      value: userCount
+    })
+
+    const item = new StatModel({
+      time: new Date(),
+      field: 'items',
+      value: itemCount
+    })
+
+    const views = new StatModel({
+      time: new Date(),
+      field: 'views',
+      value: viewCount
+    })
+
+    const bandwidth = new StatModel({
+      time: new Date(),
+      field: 'bandwidth',
+      value: bandwidthUsed
+    })
+    
+    await Promise.all([
+      user.save(),
+      item.save(),
+      views.save(),
+      bandwidth.save()
+    ])
   }
 }
 
