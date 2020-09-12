@@ -7,7 +7,6 @@ const sharp = require('sharp')
 const name = 'image'
 
 const generateThumb = memoize(async item => {
-  // We don't know what this file is, so we have no idea what the thumb should look like.
   const body = Buffer.concat(await toArray(await item.item.getItemStream()))
 
   const result = await smartcrop.crop(body, { width: 256, height: 256 })

@@ -18,7 +18,13 @@ class ClamAV {
             headers: form.getHeaders()
         })
             .then(res => res.text())
-            .then(res => hjson.parse(res))
+            .then(res => {
+                try {
+                    return hjson.parse(res)
+                } catch(e) {
+                    console.error('invalid clamav response', res)
+                }
+            })
     }
 }
 

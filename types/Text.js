@@ -7,6 +7,7 @@ const execa = require('execa')
 const { v4: uuidv4 } = require('uuid')
 const sharp = require('sharp')
 const smartcrop = require('smartcrop-sharp')
+const config = require('@femto-apps/config')
 
 const Utils = require('../modules/Utils')
 
@@ -27,7 +28,7 @@ const generateThumb = memoize(async item => {
 
   await fs.writeFile(tempPath, itemBuffer, 'utf-8')
 
-  const {stdout, stderr} = await execa('carbon-now', ['-h', tempPath, '-t', uuid])
+  const {stdout, stderr} = await execa(config.get('carbon.path'), ['-h', tempPath, '-t', uuid])
   await fs.rename(`${uuid}.png`, `${tempPath}.png`)
   const body = await fs.readFile(`${tempPath}.png`)
 

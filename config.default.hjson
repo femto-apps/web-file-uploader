@@ -9,6 +9,9 @@
     url: {
         origin: https://v2.femto.pw/
     }
+    carbon: {
+        path: /home/codefined/.yarn/bin/carbon-now
+    }
     mongo: {
         uri: mongodb://localhost:27017/
         db: fileUploader
@@ -20,7 +23,7 @@
         secretKey: zO21IgZpawthEK6DibBOthwMWMFqM7iWr0riGCYR
     }
     clamav: {
-        url: http://localhost:9001
+        url: http://localhost:9002
     }
     session: {
         secret: 3a8glh3al85tgh3a538haga38g
