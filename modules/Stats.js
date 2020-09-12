@@ -45,23 +45,35 @@ class Stats {
     const userCount = await UserModel.countDocuments()
     const itemCount = await ItemModel.countDocuments()
 
-    const viewCount = (await ItemModel.aggregate([{ $match: {} }, {
+    let viewCountResponse = await ItemModel.aggregate([{ $match: {} }, {
       $group: {
         _id: null,
         total: {
           $sum: "$metadata.views"
         }
       }
-    }]))[0].total
+    }])
 
-    const bandwidthUsed = (await ItemModel.aggregate([{ $match: {} }, {
+    if (viewCountResponse.length === 0) {
+      viewCountResponse = [{ total: 0 }]
+    }
+
+    const viewCount = viewCountResponse[0].total
+
+    let bandwidthUsedResponse = await ItemModel.aggregate([{ $match: {} }, {
       $group: {
         _id: null,
         total: {
           $sum: { $multiply: ["$metadata.views", "$metadata.size"] }
         }
       }
-    }]))[0].total
+    }])
+
+    if (bandwidthUsedResponse.length === 0) {
+      bandwidthUsedResponse = [{ total: 0 }]
+    }
+
+    const bandwidthUsed = bandwidthUsedResponse[0].total
 
     const user = new StatModel({
       time: new Date(),
