@@ -257,6 +257,8 @@ function ignoreAuth(req, res) {
     app.post('/upload/multipart', cors(), multer, async (req, res) => {
         req.user = await User.fromReq(req)
 
+	console.log(req.file)
+
         const originalName = req.file.originalname
         const extension = originalName.slice((originalName.lastIndexOf(".") - 1 >>> 0) + 2)
         const expiresAt = Utils.parseExpiry(req.body.expiry)
