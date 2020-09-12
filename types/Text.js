@@ -29,7 +29,7 @@ const generateThumb = memoize(async item => {
   await fs.writeFile(tempPath, itemBuffer, 'utf-8')
 
   const {stdout, stderr} = await execa(config.get('carbon.path'), ['-h', tempPath, '-t', uuid])
-  await fs.rename(`${uuid}.png`, `${tempPath}.png`)
+  await Utils.move(`${uuid}.png`, `${tempPath}.png`)
   const body = await fs.readFile(`${tempPath}.png`)
 
   const result = await smartcrop.crop(body, { width: 256, height: 256 })

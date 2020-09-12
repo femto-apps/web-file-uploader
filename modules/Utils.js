@@ -1,4 +1,5 @@
 const User = require('../modules/User')
+const fs = require('fs')
 
 class Utils {
     constructor() {}
@@ -38,6 +39,39 @@ class Utils {
 
             stream.on('error', err => reject(err))
             stream.on('end', () => resolve(lines.join('\n')))
+        })
+    }
+
+    static move(oldPath, newPath) {
+        return new Promise((res, rej) => {
+            fs.rename(oldPath, newPath, function (err) {
+                if (err) {
+                    if (err.code === 'EXDEV') {
+                        copy()
+                    } else {
+                        rej(err)
+                    }
+                    return
+                }
+                res()
+            })
+        
+            function copy() {
+                var readStream = fs.createReadStream(oldPath)
+                var writeStream = fs.createWriteStream(newPath)
+        
+                readStream.on('error', rej)
+                writeStream.on('error', rej)
+        
+                readStream.on('close', function () {
+                    fs.unlink(oldPath, err => {
+                        if (err) return rej(err)
+                        return res()
+                    })
+                })
+        
+                readStream.pipe(writeStream)
+            }
         })
     }
 }
