@@ -49,7 +49,7 @@ async function convertUrl(original) {
     original = JSON.parse(JSON.stringify(original))
 
     if (await newShort.get(original.name.short)) {
-        console.log('already handled', original._id, original.name.short)
+        // console.log('already handled', original._id, original.name.short)
         return
     }
     
@@ -92,7 +92,7 @@ async function convertItem(original) {
     original = JSON.parse(JSON.stringify(original))
 
     if (await newShort.get(original.name.short)) {
-        console.log('already handled', original._id, original.name.short)
+        // console.log('already handled', original._id, original.name.short)
         return
     }
 
@@ -113,8 +113,8 @@ async function convertItem(original) {
         trueOriginal.transfer = 'failed'
         trueOriginal.markModified('transfer')
         await trueOriginal.save()
-        console.log('pausing for 5s')
-        await pause(5000)
+        console.log('pausing for 10s')
+        await pause(10000)
 
         return 'failed'
     }
@@ -193,7 +193,7 @@ async function convertItem(original) {
 async function init() {
     const items = await MinimalItem.find({ 'file.filetype': { '$ne': 'url' }, 'type.long': { '$ne': 'url' }, 'transfer': { '$ne': 'failed' } })
 
-    const limit = pLimit(5)
+    const limit = pLimit(1)
     await Promise.all(items.map(item => limit(() => convertItem(item))))
 
     console.log('disconnecting')
