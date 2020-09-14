@@ -150,7 +150,7 @@ function ignoreAuth(req, res) {
 
                 res.locals.user = req.user
             } else {
-                links.push({ title: 'Login', href: res.locals.auth.getLogin(`${config.get('authenticationConsumer.endpoint')}w${req.originalUrl}`) })
+                links.push({ title: 'Login', href: res.locals.auth.getLogin(`${config.get('authenticationConsumer.endpoint')}${req.originalUrl}`) })
             }
         }
 
