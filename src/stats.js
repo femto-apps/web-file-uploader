@@ -1,6 +1,8 @@
 const moment = require('moment')
+const prettyBytes = require('pretty-bytes')
+const abbreviate = require('number-abbreviate')
 
-function createChart(target, series) {
+function createChart(target, series, label = val => val) {
     var chart = new Chartist.Line(target, {
         series: series
     }, {
@@ -10,6 +12,9 @@ function createChart(target, series) {
             labelInterpolationFnc: function(value) {
                 return moment(value).format('MMM D');
             }
+        },
+        axisY: {
+            labelInterpolationFnc: label
         }
     });
 }
@@ -33,11 +38,11 @@ createChart('#views-chart', [
         name: 'views',
         data: views.map(val => ({ x: new Date(val.time), y: val.value }))
     }
-])
+], val => abbreviate(val))
 
 createChart('#bandwidth-chart', [
     {
         name: 'bandwidth',
         data: bandwidth.map(val => ({ x: new Date(val.time), y: val.value }))
     }
-])
+], val => prettyBytes(val))

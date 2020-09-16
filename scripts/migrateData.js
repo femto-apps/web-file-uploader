@@ -92,7 +92,7 @@ async function convertItem(original) {
     original = JSON.parse(JSON.stringify(original))
 
     if (await newShort.get(original.name.short)) {
-        // console.log('already handled', original._id, original.name.short)
+        console.log('already handled', original._id, original.name.short)
         return
     }
 
@@ -138,22 +138,33 @@ async function convertItem(original) {
     console.log('got body')
 
     await client.putObject(bucket, filepath, dataStream, undefined)
+    
 
     console.log('put object')
 
     const store = await newStore.create({
         bucket, folder, filename, filepath, store: 'minio'
     })
-    const bytes = (await toArray(await store.getStream({ end: 2048, start: 0 })))[0]
+
+    let grab = { start: 0, end: 4100 }
+    if (original.file.length < 4100) {
+        grab = { start: 0, end: 0 }
+    }
+
+    let bytes = (await toArray(await store.getStream(grab)))[0]
 
     console.log(bytes)
+
+    if (bytes === undefined) {
+        bytes = Buffer.from([])
+    }
 
     const { data } = await Types.detect(store, bytes, {
         mimetype: original.file.mime,
         encoding: original.file.encoding
     })
 
-    console.log('detected type')
+    console.log('detected type', data)
 
     const item = await newItemModel.create({
         name: {
@@ -191,10 +202,17 @@ async function convertItem(original) {
 }
 
 async function init() {
-    const items = await MinimalItem.find({ 'file.filetype': { '$ne': 'url' }, 'type.long': { '$ne': 'url' }, 'transfer': { '$ne': 'failed' } })
+    // const items = await MinimalItem.find({ 'file.filetype': { '$ne': 'url' }, 'type.long': { '$ne': 'url' }, 'transfer': { '$ne': 'failed' } })
+    // const items = await MinimalItem.find({ 'file.filetype': { '$ne': 'url' }, 'type.long': { '$ne': 'url' }, 'transfer': { '$exists': false } })
+    const items = await MinimalItem.find({ 'type.long': 'url' })
 
-    const limit = pLimit(1)
-    await Promise.all(items.map(item => limit(() => convertItem(item))))
+
+    for (let item of items) {
+        // await convertItem(item)
+        console.log(item)
+        return
+        await convertUrl(item)
+    }
 
     console.log('disconnecting')
 

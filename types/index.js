@@ -21,8 +21,13 @@ class Types {
             encoding: file.encoding
         }
 
-        // We first pass it through some initial checks
-       const type = await fileType.fromBuffer(bytes)
+        let type
+        try {
+            // We first pass it through some initial checks
+            type = await fileType.fromBuffer(bytes)
+        } catch(e) {
+            type = { ext: 'unknown', mime: 'application/octet-stream' }
+        }
 
         if (type && type.mime) {
             data.mime = type.mime

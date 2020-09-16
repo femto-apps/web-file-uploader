@@ -253,11 +253,11 @@ function ignoreAuth(req, res) {
         res.json({ data: { short } })
     })
 
-    app.options('/upload/multipart', cors())
-    app.post('/upload/multipart', cors(), multer, async (req, res) => {
+    app.options(['/upload', '/upload/multipart'], cors())
+    app.post(['/upload', '/upload/multipart'], cors(), multer, async (req, res) => {
         req.user = await User.fromReq(req)
 
-	console.log(req.file)
+	    console.log(req.file)
 
         const originalName = req.file.originalname
         const extension = originalName.slice((originalName.lastIndexOf(".") - 1 >>> 0) + 2)

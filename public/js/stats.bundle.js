@@ -1560,6 +1560,29 @@ eval("/* WEBPACK VAR INJECTION */(function(module) {var require;//! moment.js\n/
 
 /***/ }),
 
+/***/ "./node_modules/number-abbreviate/index.js":
+/*!*************************************************!*\
+  !*** ./node_modules/number-abbreviate/index.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("(function(root){\n  'use strict';\n\n  function NumberAbbreviate() {\n    var units\n    if (!(this instanceof NumberAbbreviate)) {\n      // function usage: abbrev(n, decPlaces, units)\n      var n = arguments[0]\n      var decPlaces = arguments[1]\n      units = arguments[2]\n      var ab = new NumberAbbreviate(units)\n      return ab.abbreviate(n, decPlaces)\n    }\n    // class usage: new NumberAbbreviate(units)\n    units = arguments[0]\n    this.units = units == null ? ['k', 'm', 'b', 't'] : units\n  }\n\n  NumberAbbreviate.prototype._abbreviate = function(number, decPlaces) {\n    decPlaces = Math.pow(10, decPlaces)\n\n    for (var i = this.units.length - 1; i >= 0; i--) {\n\n      var size = Math.pow(10, (i + 1) * 3)\n\n      if (size <= number) {\n        number = Math.round(number * decPlaces / size) / decPlaces\n\n        if ((number === 1000) && (i < this.units.length - 1)) {\n          number = 1\n          i++\n        }\n\n        number += this.units[i]\n\n        break\n      }\n    }\n\n    return number\n  }\n\n  NumberAbbreviate.prototype.abbreviate = function(number, decPlaces) {\n    var isNegative = number < 0\n    var abbreviatedNumber = this._abbreviate(Math.abs(number), decPlaces || 0)\n\n    return isNegative ? '-' + abbreviatedNumber : abbreviatedNumber;\n  }\n\n  if ( true && module.exports) {\n    module.exports = NumberAbbreviate\n  } else {\n    root.NumberAbbreviate = NumberAbbreviate\n  }\n\n})(this);\n\n\n//# sourceURL=webpack:///./node_modules/number-abbreviate/index.js?");
+
+/***/ }),
+
+/***/ "./node_modules/pretty-bytes/index.js":
+/*!********************************************!*\
+  !*** ./node_modules/pretty-bytes/index.js ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\n\nconst BYTE_UNITS = [\n\t'B',\n\t'kB',\n\t'MB',\n\t'GB',\n\t'TB',\n\t'PB',\n\t'EB',\n\t'ZB',\n\t'YB'\n];\n\nconst BIT_UNITS = [\n\t'b',\n\t'kbit',\n\t'Mbit',\n\t'Gbit',\n\t'Tbit',\n\t'Pbit',\n\t'Ebit',\n\t'Zbit',\n\t'Ybit'\n];\n\n/*\nFormats the given number using `Number#toLocaleString`.\n- If locale is a string, the value is expected to be a locale-key (for example: `de`).\n- If locale is true, the system default locale is used for translation.\n- If no value for locale is specified, the number is returned unmodified.\n*/\nconst toLocaleString = (number, locale) => {\n\tlet result = number;\n\tif (typeof locale === 'string') {\n\t\tresult = number.toLocaleString(locale);\n\t} else if (locale === true) {\n\t\tresult = number.toLocaleString();\n\t}\n\n\treturn result;\n};\n\nmodule.exports = (number, options) => {\n\tif (!Number.isFinite(number)) {\n\t\tthrow new TypeError(`Expected a finite number, got ${typeof number}: ${number}`);\n\t}\n\n\toptions = Object.assign({bits: false}, options);\n\tconst UNITS = options.bits ? BIT_UNITS : BYTE_UNITS;\n\n\tif (options.signed && number === 0) {\n\t\treturn ' 0 ' + UNITS[0];\n\t}\n\n\tconst isNegative = number < 0;\n\tconst prefix = isNegative ? '-' : (options.signed ? '+' : '');\n\n\tif (isNegative) {\n\t\tnumber = -number;\n\t}\n\n\tif (number < 1) {\n\t\tconst numberString = toLocaleString(number, options.locale);\n\t\treturn prefix + numberString + ' ' + UNITS[0];\n\t}\n\n\tconst exponent = Math.min(Math.floor(Math.log10(number) / 3), UNITS.length - 1);\n\t// eslint-disable-next-line unicorn/prefer-exponentiation-operator\n\tnumber = Number((number / Math.pow(1000, exponent)).toPrecision(3));\n\tconst numberString = toLocaleString(number, options.locale);\n\n\tconst unit = UNITS[exponent];\n\n\treturn prefix + numberString + ' ' + unit;\n};\n\n\n//# sourceURL=webpack:///./node_modules/pretty-bytes/index.js?");
+
+/***/ }),
+
 /***/ "./node_modules/webpack/buildin/module.js":
 /*!***********************************!*\
   !*** (webpack)/buildin/module.js ***!
@@ -1578,7 +1601,7 @@ eval("module.exports = function(module) {\n\tif (!module.webpackPolyfill) {\n\t\
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("const moment = __webpack_require__(/*! moment */ \"./node_modules/moment/moment.js\")\n\nfunction createChart(target, series) {\n    var chart = new Chartist.Line(target, {\n        series: series\n    }, {\n        axisX: {\n            type: Chartist.FixedScaleAxis,\n            divisor: 5,\n            labelInterpolationFnc: function(value) {\n                return moment(value).format('MMM D');\n            }\n        }\n    });\n}\n\ncreateChart('#users-chart', [\n    {\n        name: 'users',\n        data: users.map(val => ({ x: new Date(val.time), y: val.value }))\n    }\n])\n\ncreateChart('#items-chart', [\n    {\n        name: 'items',\n        data: items.map(val => ({ x: new Date(val.time), y: val.value }))\n    }\n])\n\ncreateChart('#views-chart', [\n    {\n        name: 'views',\n        data: views.map(val => ({ x: new Date(val.time), y: val.value }))\n    }\n])\n\ncreateChart('#bandwidth-chart', [\n    {\n        name: 'bandwidth',\n        data: bandwidth.map(val => ({ x: new Date(val.time), y: val.value }))\n    }\n])\n\n//# sourceURL=webpack:///./src/stats.js?");
+eval("const moment = __webpack_require__(/*! moment */ \"./node_modules/moment/moment.js\")\nconst prettyBytes = __webpack_require__(/*! pretty-bytes */ \"./node_modules/pretty-bytes/index.js\")\nconst abbreviate = __webpack_require__(/*! number-abbreviate */ \"./node_modules/number-abbreviate/index.js\")\n\nfunction createChart(target, series, label = val => val) {\n    var chart = new Chartist.Line(target, {\n        series: series\n    }, {\n        axisX: {\n            type: Chartist.FixedScaleAxis,\n            divisor: 5,\n            labelInterpolationFnc: function(value) {\n                return moment(value).format('MMM D');\n            }\n        },\n        axisY: {\n            labelInterpolationFnc: label\n        }\n    });\n}\n\ncreateChart('#users-chart', [\n    {\n        name: 'users',\n        data: users.map(val => ({ x: new Date(val.time), y: val.value }))\n    }\n])\n\ncreateChart('#items-chart', [\n    {\n        name: 'items',\n        data: items.map(val => ({ x: new Date(val.time), y: val.value }))\n    }\n])\n\ncreateChart('#views-chart', [\n    {\n        name: 'views',\n        data: views.map(val => ({ x: new Date(val.time), y: val.value }))\n    }\n], val => abbreviate(val))\n\ncreateChart('#bandwidth-chart', [\n    {\n        name: 'bandwidth',\n        data: bandwidth.map(val => ({ x: new Date(val.time), y: val.value }))\n    }\n], val => prettyBytes(val))\n\n//# sourceURL=webpack:///./src/stats.js?");
 
 /***/ })
 
