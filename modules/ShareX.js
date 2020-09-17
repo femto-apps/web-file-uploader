@@ -7,7 +7,7 @@ class ShareX {
     res.setHeader('Content-Disposition', `attachment; filename="${config.get('title.name')}.sxcu"`)
     res.setHeader('Content-Type', 'application/octet-binary; charset=utf-8')
     res.send(JSON.stringify({
-      Name: 'Femto Uploader',
+      Name: config.get('title.suffix'),
       DestinationType: 'ImageUploader, TextUploader, FileUploader',
       RequestURL: `${config.get('url.origin')}upload/multipart`,
       FileFormName: 'upload',
