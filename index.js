@@ -62,6 +62,8 @@ function ignoreAuth(req, res) {
         limits: { fileSize: 8589934592 }
     }).single('upload')
 
+    const multer_text = Multer().none()
+
     mongoose.connect(config.get('mongo.uri') + config.get('mongo.db'), {
         useNewUrlParser: true,
         useUnifiedTopology: true,
@@ -231,13 +233,18 @@ function ignoreAuth(req, res) {
         })
     })
 
-    app.options('/upload/url', cors())
-    app.post('/upload/url', cors(), async (req, res) => {
+    // /i/upload/url is deprecated, please use /upload/url
+    app.options(['/i/upload/url', '/upload/url'], cors())
+    app.post(['/i/upload/url', '/upload/url'], cors(), multer_text, async (req, res) => {
         req.user = await User.fromReq(req)
         const expiresAt = Utils.parseExpiry(req.body.expiry)
+
+        console.log(req.body, req.headers)
+
         const item = await Item.create({
             name: {
-                original: req.body.url,
+                // req.body.text is only used in uploader v2
+                original: req.body.url || req.body.text,
             },
             metadata: {
                 filetype: 'url',
@@ -253,8 +260,9 @@ function ignoreAuth(req, res) {
         res.json({ data: { short } })
     })
 
-    app.options(['/upload', '/upload/multipart'], cors())
-    app.post(['/upload', '/upload/multipart'], cors(), multer, async (req, res) => {
+    // /i/upload and /upload are deprecated, please use /upload/multipart
+    app.options(['/i/upload', '/upload', '/upload/multipart'], cors())
+    app.post(['/i/upload', '/upload', '/upload/multipart'], cors(), multer, async (req, res) => {
         req.user = await User.fromReq(req)
 
 	    console.log(req.file)

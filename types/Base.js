@@ -4,6 +4,7 @@ const path = require('path')
 const { promisify } = require('util')
 const sendRanges = require('send-ranges')
 const { PassThrough } = require('stream')
+const contentDisposition = require('content-disposition')
 
 const name = 'base'
 
@@ -86,7 +87,7 @@ class Base {
     async serve(req, res) {
         if (await this.checkDead(req, res)) return
 
-        res.set('Content-Disposition', await this.getFileName())
+        res.set('Content-Disposition', contentDisposition(await this.item.getName(), { type: 'inline' }))
         res.set('Content-Type', await this.getMime())
 
         if (req.headers.range) {
@@ -124,7 +125,7 @@ class Base {
             await this.generateThumb(this)
         }
 
-        res.set('Content-Disposition', await this.getFileName())
+        res.set('Content-Disposition', contentDisposition(await this.item.getName(), { type: 'inline' }))
         res.set('Content-Type', 'image/png')
 
         const stream = await this.item.getThumbStream()
@@ -153,10 +154,6 @@ class Base {
 
     async getExpired() {
         return this.item.getExpired()
-    }
-
-    async getFileName() {
-        return `filename="${await this.item.getName()}"`
     }
 
     async generateThumb() {
