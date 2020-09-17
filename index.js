@@ -155,7 +155,7 @@ function ignoreAuth(req, res) {
         }
 
         res.locals.nav = {
-            title: 'Femto Uploader',
+            title: `${config.get('title.suffix')}`,
             links
         }
 
