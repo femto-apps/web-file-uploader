@@ -118,6 +118,8 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 
 ### Installation
 
+> Installation of this service and it's dependencies (in particular, web-authentication-provider and web-authentication-token-servce) still require more documentation.  It also needs to be streamlined as for now can take upwards of 20 minutes.  Want us to support a build system of your choice (e.g. Docker Compose?) make an issue for it!
+
 1. Clone the repo
 ```sh
 git clone https://github.com/femto-apps/web-file-uploader
