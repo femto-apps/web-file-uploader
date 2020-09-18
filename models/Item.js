@@ -34,9 +34,10 @@ const ItemSchema = mongoose.Schema({
     _id: { type: mongoose.Schema.Types.ObjectId },
     ip: { type: String }
   },
+  deleted: { type: Boolean, default: false },
   version: { type: Number, default: 3 }
 }, {
-	timestamps: true,
+  timestamps: true,
   strict: false	
 })
 

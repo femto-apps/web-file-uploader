@@ -336,6 +336,12 @@ function ignoreAuth(req, res) {
         req.item.thumb(req, res)
     })
 
+    app.get(['/delete/:item', '/delete/item/*'], Item.fromReq, async (req, res) => {
+        return res.json({ error: 'not implemented' })
+
+        req.item.delete(req, res)
+    })
+
     app.get(['/:item', '/:item/*'], Item.fromReq, async (req, res) => {
         req.item.serve(req, res)
     })

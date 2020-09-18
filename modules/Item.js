@@ -88,6 +88,12 @@ class Item {
         return itemStore.getStat()
     }
 
+    async getThumb() {
+        const thumbItem = await this.getItem('references.thumb')
+
+        return thumbItem
+    }
+
     async getThumbStream() {
         const thumbItem = await this.getItem('references.thumb')
         return thumbItem.getItemStream()
@@ -95,6 +101,11 @@ class Item {
 
     async hasThumb() {
         return typeof this.item.references.thumb !== 'undefined'
+    }
+
+    async markDeleted() {
+        this.item.deleted = true
+        await this.item.save()
     }
 
     async setThumb(stream) {

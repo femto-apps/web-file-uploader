@@ -145,7 +145,12 @@ class Base {
     }
 
     async delete() {
+        if (await this.item.hasThumb()) {
+            const thumb = this.item.getThumb()
+            await thumb.delete()
+        }
 
+        await this.item.markDeleted()
     }
 
     async getMime() {
