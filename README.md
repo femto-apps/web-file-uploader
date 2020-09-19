@@ -77,62 +77,7 @@ Thus, the aptly named 'web file uploader' has been written, it's main features i
 <!-- GETTING STARTED -->
 ## Getting Started
 
-To get a local copy up and running follow these simple example steps.
-
-### Prerequisites
-
-* [node](https://nodejs.org/en/download/) (tested on v12+)
-* npm
-```sh
-npm install npm@latest -g
-```
-* minio
-```sh
-# either from https://min.io/ or with Docker:
-docker volume create --name=miniodata
-docker run -p 9000:9000 -e MINIO_ACCESS_KEY=CHANGE_ME_ACCESS_KEY -e MINIO_SECRET_KEY=CHANGE_ME_SECRET_KEY --name minio -v miniodata:/data -d minio/minio server /data
-```
-* mongo
-```sh
-# either from https://www.mongodb.com/ or with Docker:
-docker volume create --name=mongodata
-docker run -p 27017:27017 --name mongo -v mongodata:/data/db -d mongo
-```
-* redis
-```sh
-# either from https://redis.io/ or with Docker:
-docker volume create --name=redisdata
-docker run -p 6379:6379 --name redis -v redisdata:/data -d redis redis-server --appendonly yes
-```
-* [web-authentication-provider](https://github.com/femto-apps/web-authentication-provider)
-* [web-authentication-token-service](https://github.com/femto-apps/web-authentication-token-service)
-
-If virus scanning is enabled you need to install:
-
-* clamav
-```sh
-# the port is set to 9001 because 9000 is used by minio by default
-docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
-# this takes a while to start up, monitor progress with `docker logs clamav`
-```
-
-### Installation
-
-> Installation of this service and it's dependencies (in particular, web-authentication-provider and web-authentication-token-servce) still require more documentation.  It also needs to be streamlined as for now can take upwards of 20 minutes.  Want us to support a build system of your choice (e.g. Docker Compose?) make an issue for it!
-
-1. Clone the repo
-```sh
-git clone https://github.com/femto-apps/web-file-uploader
-```
-2. Install NPM packages
-```sh
-npm install
-```
-3. Copy `config.default.hjson` to `config.hjson`
-```sh
-cp config.default.hjson config.hjson
-```
-4. Update the configuration to your liking, specifically you must change `minio.accessKey`, `minio.secretKey`, `session.secret` and `authenticationProvider.consumerId`
+To get a local copy up and running please see [INSTALL.md](INSTALL.md)
 
 <!-- ROADMAP -->
 ## Roadmap
