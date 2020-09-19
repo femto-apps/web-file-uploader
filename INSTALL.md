@@ -65,13 +65,13 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 
 ## Install Authentication Provider
 
-1. clone the repository of Authenticatin Provider.
+1. Clone the repository of Authentication Provider.
 	```
 	git clone https://github.com/femto-apps/web-authentication-provider.git provider
 	```
 2. `cd provider`
 3. Copy `config.default.js` to `config.js`
-4. Edit `config.js`. Specially change MongoDB URI to your MongoDB server's.
+4. Edit `config.js`. Change the Mongo URI to point to your MongoDB server, and replace all secrets with random strings.
 
 	- Example
 	```js
@@ -93,7 +93,7 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 	    secret: 'REPLACE THIS WITH A RANDOM STRING'
 	  },
 	  title: {
-	    suffix: 'Femto Authentication Provider' (You can replae this with your favorite title)
+	    suffix: 'Femto Authentication Provider' // You can replace this with your favorite title
 	  },
 	  favicon: 'public/images/favicon/favicon.ico',
 	}
@@ -147,6 +147,13 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 
 	</VirtualHost>
 	</IfModule>
+	```
+	
+	- Example for Caddy
+	```caddy
+		auth.example.com {
+			proxy / localhost:3001
+		}
 	```
 8. Access `https://auth.example.com/consumer/add` via your browser.
 9. Enter `Name`, `Description` and `Redirects` but `Redirects` is as below:
@@ -208,12 +215,18 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 	</VirtualHost>
 	</IfModule>
 	```
+	- Example for Caddy
+	```caddy
+		token.example.com {
+			proxy / localhost:4500
+		}
+	```
 
 ## Install Web-File-Uploader
 1. Install `carbon-now-cli`.
 
 	e.g. `yarn global add carbon-now-cli` or `npm install -g carbon-now-cli`
-2. clone the repository
+2. Clone the repository
 	```
 	git clone https://github.com/femto-apps/web-file-uploader.git uploader
 	```
@@ -227,14 +240,15 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 	    port: 3005
 	    dev: false
 	    title: {
-	        name: Femto Uploader (You can replae this with your favorite name)
-	        shortener: Femto Shortener (You can replae this with your favorite title)
-	        suffix: Femto Uploader (You can replae this with your favorite suffix)
+	        name: Femto Uploader // You can replae this with your favorite name
+	        shortener: Femto Shortener // You can replae this with your favorite name
+	        suffix: Femto Uploader // You can replae this with your favorite name
 	    }
 	    url: {
 	        origin: https://www.example.com/
 	    }
 	    carbon: {
+	    	// you can find this installation directory with `which carbon-now`
 	        path: /path/to/.yarn/bin/carbon-now
 	    }
 	    mongo: {
@@ -266,7 +280,7 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 	    }
 	    authenticationProvider: {
 	        endpoint: https://auth.example.com
-	        consumerId: REPLACE THIS WITH YOUR CONSULER ID (You got this in the instllation step 10 for Web Authentication Provider)
+	        consumerId: REPLACE THIS WITH YOUR CONSUMER ID // You got this in the installation step 10 for Web Authentication Provider
 	    }
 	    authenticationConsumer: {
 	        endpoint: https://www.example.com
@@ -322,5 +336,11 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 
 	</VirtualHost>
 	</IfModule>
+	```
+	- Example for Caddy
+	```caddy
+	www.example.com {
+		proxy / localhost:3005
+	}
 	```
 9. Access `https://www.example.com` and you can register as many users as you wish! :)
