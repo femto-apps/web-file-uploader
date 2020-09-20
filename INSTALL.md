@@ -239,6 +239,7 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 	{
 	    port: 3005
 	    dev: false
+	    trustedProxy: ['127.0.0.1/8', '::1/128']
 	    title: {
 	        name: Femto Uploader // You can replae this with your favorite name
 	        shortener: Femto Shortener // You can replae this with your favorite name
@@ -258,6 +259,7 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 	    minio: {
 	        host: 127.0.0.1
 	        port: 9000
+	        itemBucket: items // the bucket you created on Minio
 	        accessKey: ACCESSKEY
 	        secretKey: SECRETKEY
 	    }
