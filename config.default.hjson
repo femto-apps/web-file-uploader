@@ -1,6 +1,7 @@
 {
     port: 3005
     dev: false
+    trustedProxy: ['127.0.0.1/8', '::1/128']
     title: {
         name: Femto Uploader
         shortener: Femto Shortener
