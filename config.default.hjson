@@ -24,6 +24,7 @@
         secretKey: zO21IgZpawthEK6DibBOthwMWMFqM7iWr0riGCYR
     }
     clamav: {
+        enabled: true
         url: http://localhost:9002
     }
     session: {

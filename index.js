@@ -303,6 +303,10 @@ function ignoreAuth(req, res) {
 
         console.log('scanning file')
         clam.scan(originalName, await store.getStream()).then(async result => {
+            if (result.disabled) {
+                return console.log(`didn't run scan because it was disabled.`)
+            }
+
             const virusResult = {
                 run: true,
                 description: result.Description

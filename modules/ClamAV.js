@@ -9,6 +9,12 @@ class ClamAV {
     }
 
     async scan(filename, stream) {
+        if (!config.get('clamav.enabled')) {
+            return {
+                disabled: true
+            }
+        }
+
         const form = new FormData()
         form.append('file', stream, { filename })
 
