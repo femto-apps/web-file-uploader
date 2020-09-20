@@ -51,6 +51,10 @@ class Item {
         return this.item.metadata.expired
     }
 
+    async getDeleted() {
+        return this.item.deleted
+    }
+
     async getVirus() {
         return this.item.metadata.virus
     }
@@ -143,6 +147,14 @@ class Item {
 
         this.item.references.thumb = await thumb.getModel()
         await this.item.save()
+    }
+
+    async ownedBy(user) {
+        if (user && this.item.user._id.equals(user.user.generic._id)) {
+            return true
+        }
+
+        return false
     }
 
     async getModel() {

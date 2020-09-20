@@ -33,6 +33,7 @@ block main
                 +row('Mime Type', item.metadata.mime)
                 +row('Encoding', item.metadata.encoding)
                 +row('Filetype', item.metadata.filetype)
+                +row('Deleted', item.deleted)
 
     if item.references && item.references.storage
         section

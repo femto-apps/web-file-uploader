@@ -77,6 +77,11 @@ class Base {
             return true
         }
 
+        if (await this.getDeleted()) {
+            res.send('This item was removed.')
+            return true
+        }
+
         const virus = await this.item.getVirus()
         if (virus.detected) {
             res.send(`This item was detected as a virus and removed.  We thought it was: ${virus.description}`)
@@ -146,7 +151,8 @@ class Base {
 
     async delete() {
         if (await this.item.hasThumb()) {
-            const thumb = this.item.getThumb()
+            const thumb = new Base(await this.item.getThumb())
+
             await thumb.delete()
         }
 
@@ -161,8 +167,16 @@ class Base {
         return this.item.getExpired()
     }
 
+    async getDeleted() {
+        return this.item.getDeleted()
+    }
+
     async generateThumb() {
         throw new Error('Dummy function, should be implemented in constructor.')
+    }
+
+    async ownedBy(user) {
+        return this.item.ownedBy(user)
     }
 }
 

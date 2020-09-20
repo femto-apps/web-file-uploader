@@ -222,6 +222,7 @@ function ignoreAuth(req, res) {
         const items = (await collection.list())
             .filter(item => item.item.metadata.filetype !== 'thumb')
             .filter(item => item.item.metadata.expired !== true)
+            .filter(item => item.item.deleted !== true)
         
         // console.log(items.forEach(item => {
         //     console.log(item.item.references)
@@ -337,9 +338,13 @@ function ignoreAuth(req, res) {
     })
 
     app.get(['/delete/:item', '/delete/item/*'], Item.fromReq, async (req, res) => {
-        return res.json({ error: 'not implemented' })
+        if (!(await req.item.ownedBy(req.user))) {
+            return res.json({ removed: false, err: 'You do not own this item.' })
+        }
 
-        req.item.delete(req, res)
+        await req.item.delete()
+
+        return res.json({ removed: true })
     })
 
     app.get(['/:item', '/:item/*'], Item.fromReq, async (req, res) => {
