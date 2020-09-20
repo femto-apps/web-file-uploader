@@ -7,6 +7,7 @@ const Short = require('./Short')
 const Store = require('./Store')
 const Types = require('../types')
 const Collection = require('./Collection')
+const config = require('@femto-apps/config')
 
 class Item {
     constructor(item) {
@@ -115,7 +116,7 @@ class Item {
 
         const thumbStorage = await Store.create({
             store: 'minio',
-            bucket: 'items',
+            bucket: config.get('minio.itemBucket'),
             folder: folder,
             filename: filename,
             filepath: path.posix.join(folder, filename)
