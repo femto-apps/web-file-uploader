@@ -258,6 +258,7 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 	    minio: {
 	        host: 127.0.0.1
 	        port: 9000
+		itemBucket: BUCKET NAME YOU CREATED ON MINIO
 	        accessKey: ACCESSKEY
 	        secretKey: SECRETKEY
 	    }
