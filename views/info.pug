@@ -46,6 +46,13 @@ block main
                     +row('Folder', `Redacted`)
                     +row('Filename', item.references.storage.filename)
 
+    if isOwner
+        section
+            h4 Owner Actions
+
+            a(href=`/delete/${item.references.canonical.short}`)
+                button Delete Item
+
     section
         h4 Generated Thumb
 

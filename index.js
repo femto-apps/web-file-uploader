@@ -334,7 +334,8 @@ function ignoreAuth(req, res) {
             item: req.item.item.item,
             page: { title: `Info :: ${config.get('title.suffix')}` },
             prettyBytes,
-            dateFormat
+            dateFormat,
+            isOwner: await req.item.ownedBy(req.user)
         })
     })
 
