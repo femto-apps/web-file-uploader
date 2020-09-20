@@ -71,6 +71,11 @@ function ignoreAuth(req, res) {
         useCreateIndex: true
     })
 
+    var p = 'loopback'
+    if (config.get('trustedProxy')) {
+        p += ',' + config.get('trustedProxy');
+    }
+    app.set('trust proxy', p)
     app.set('view engine', 'pug')
     app.disable('x-powered-by')
 
