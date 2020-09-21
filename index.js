@@ -15,6 +15,7 @@ const prettyBytes = require('pretty-bytes')
 const dateFormat = require('dateformat')
 const cors = require('cors')
 const authenticationConsumer = require('@femto-apps/authentication-consumer')
+const errorHandler = require('errorhandler')
 
 const Types = require('./types')
 const Item = require('./modules/Item')
@@ -356,6 +357,14 @@ function ignoreAuth(req, res) {
     app.get(['/:item', '/:item/*'], Item.fromReq, async (req, res) => {
         req.item.serve(req, res)
     })
+
+    process.on('uncaughtException', function (exception) {
+        console.log(exception); // to see your exception details in the console
+        // if you are on production, maybe you can send the exception details to your
+        // email as well ?
+    })
+
+    app.use(errorHandler({ dumpExceptions: true, showStack: true }))
 
     app.listen(port, () => console.log(`Example app listening on port ${port}`))
 })()
