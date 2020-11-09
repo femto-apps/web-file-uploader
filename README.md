@@ -33,6 +33,8 @@
     <a href="https://github.com/femto-apps/web-file-uploader/issues">Report Bug</a>
     ·
     <a href="https://github.com/femto-apps/web-file-uploader/issues">Request Feature</a>
+    ·
+    <a href="https://github.com/femto-apps/web-file-uploader/wiki/Changelog">Changelog</a>
   </p>
 </p>
 
