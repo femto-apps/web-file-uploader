@@ -1,8 +1,9 @@
 const User = require('../modules/User')
 const fs = require('fs')
+const qs = require('qs')
 
 class Utils {
-    constructor() {}
+    constructor() { }
 
     static parseExpiry(relativeExpiry) {
         if (relativeExpiry === undefined) {
@@ -20,7 +21,7 @@ class Utils {
 
         return expiresAt
     }
-    
+
     static getFirstLines(stream, lineCount) {
         return new Promise((resolve, reject) => {
             let data = ''
@@ -55,24 +56,33 @@ class Utils {
                 }
                 res()
             })
-        
+
             function copy() {
                 var readStream = fs.createReadStream(oldPath)
                 var writeStream = fs.createWriteStream(newPath)
-        
+
                 readStream.on('error', rej)
                 writeStream.on('error', rej)
-        
+
                 readStream.on('close', function () {
                     fs.unlink(oldPath, err => {
                         if (err) return rej(err)
                         return res()
                     })
                 })
-        
+
                 readStream.pipe(writeStream)
             }
         })
+    }
+
+    static addQuery(url, query, value) {
+        let parts = url.split('?')
+
+        const extractedQuery = qs.parse(parts[1])
+        extractedQuery[query] = value
+
+        return parts[0] + '?' + qs.stringify(extractedQuery)
     }
 }
 

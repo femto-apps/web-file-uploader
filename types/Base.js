@@ -5,6 +5,9 @@ const { promisify } = require('util')
 const sendRanges = require('send-ranges')
 const { PassThrough } = require('stream')
 const contentDisposition = require('content-disposition')
+const config = require('@femto-apps/config')
+
+const Utils = require('../modules/Utils')
 
 const name = 'base'
 
@@ -87,6 +90,12 @@ class Base {
             res.send(`This item was detected as a virus and removed.  We thought it was: ${virus.description}`)
             return true
         }
+
+        if (config.get('clamav.enabled') && !virus.run && req.query.overrideVirusCheck !== 'true') {
+            Utils.addQuery(req.originalUrl, 'overrideVirusCheck', true)
+            res.send(`This item hasn't been scanned yet and could be a virus, are you sure you want to view it? <a href="${Utils.addQuery(req.originalUrl, 'overrideVirusCheck', true)}">Click Here</a>`)
+            return true
+        }
     }
 
     async serve(req, res) {
@@ -118,7 +127,7 @@ class Base {
     }
 
     async raw(req, res) {
-        
+
     }
 
     async thumb(req, res) {

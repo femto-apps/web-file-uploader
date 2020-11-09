@@ -49,6 +49,7 @@
     "pretty-bytes": "^5.3.0",
     "pug": "^3.0.0",
     "puppeteer": "^3.3.0",
+    "qs": "^6.9.4",
     "redis": "^3.0.2",
     "resolve-path": "^1.4.0",
     "send-ranges": "^3.0.0",

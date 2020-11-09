@@ -36,7 +36,7 @@ function ignoreAuth(req, res) {
     return req.originalUrl.startsWith('/thumb/')
 }
 
-;(async () => {
+; (async () => {
     const app = express()
     const port = config.get('port')
 
@@ -45,13 +45,7 @@ function ignoreAuth(req, res) {
 
     const multer = Multer({
         storage: minioStorage({
-            minio: {
-                endPoint: config.get('minio.host'),
-                port: config.get('minio.port'),
-                useSSL: false,
-                accessKey: config.get('minio.accessKey'),
-                secretKey: config.get('minio.secretKey')
-            },
+            minio: Object.assign({}, config.get('minio'), { endPoint: config.get('minio.host') }),
             bucket: (req, file) => config.get('minio.itemBucket'),
             folder: async (req, file) => {
                 return (await Collection.fromReq(req)).path
@@ -169,7 +163,8 @@ function ignoreAuth(req, res) {
     app.get('/', async (req, res) => {
         res.render('home', {
             page: { title: `Home :: ${config.get('title.suffix')}` },
-            key: req.user ? req.user.getApiKey() : undefined
+            key: req.user ? req.user.getApiKey() : undefined,
+            origin: config.get('url.origin')
         })
     })
 
@@ -225,7 +220,7 @@ function ignoreAuth(req, res) {
             .filter(item => item.item.metadata.filetype !== 'thumb')
             .filter(item => item.item.metadata.expired !== true)
             .filter(item => item.item.deleted !== true)
-        
+
         // console.log(items.forEach(item => {
         //     console.log(item.item.references)
         // }))
@@ -268,7 +263,7 @@ function ignoreAuth(req, res) {
     app.post(['/i/upload', '/upload', '/upload/multipart'], cors(), multer, async (req, res) => {
         req.user = await User.fromReq(req)
 
-	    console.log(req.file)
+        console.log(req.file)
 
         const originalName = req.file.originalname
         const extension = originalName.slice((originalName.lastIndexOf(".") - 1 >>> 0) + 2)

@@ -22,7 +22,7 @@ block main
                 $ Download #[a(href='https://getsharex.com/').link ShareX] then install #[a(href='/sharex/uploader.sxcu').link our uploader] and #[a(href='/sharex/shortener.sxcu').link our shortener]
 
                 #[span.comment # Upload from your terminal]
-                $ curl -F "upload=@'UPLOAD_PATH'" #[span= req.protocol + '://' + req.get('host') + '/upload']
+                $ curl -F "upload=@'UPLOAD_PATH'" #[span= origin + 'upload']
 
                 #[span.comment # See more ways to upload #[a(href='https://github.com/femto-apps/web-file-uploader/wiki/Ways-to-Upload') here]]
                 #[#upload_container.hidden #[span.comment #[br]# Uploaded files]#[#uploads]]
