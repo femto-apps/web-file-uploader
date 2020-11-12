@@ -6,5 +6,8 @@ block main
             for item in items
                 - const hit = `${item.item.metadata.views} hit${item.item.metadata.views != 1 ? 's' : ''}`
                 - const message = `${item.item.name.original} (${hit})`
-                a.thumb-link(href=`/${item.item.references.canonical.short}${item.item.name.extension ? `.${item.item.name.extension}` : ``}`)
-                    img.thumb(src=`/thumb/${item.item.references.canonical.short}${item.item.name.extension ? `.${item.item.name.extension}` : ``}` alt=message title=message)
+                if item.item.references.canonical !== null
+                    a.thumb-link(href=`/${item.item.references.canonical.short}${item.item.name.extension ? `.${item.item.name.extension}` : ``}`)
+                        img.thumb(src=`/thumb/${item.item.references.canonical.short}${item.item.name.extension ? `.${item.item.name.extension}` : ``}` alt=message title=message)
+                else
+                    - console.log(`warning, trying to render ${item.item._id} but it didn't have a canonical link.`)

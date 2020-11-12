@@ -1,14 +1,14 @@
-const FormData = require('form-data')
 const config = require('@femto-apps/config')
-const fetch = require('node-fetch')
-const hjson = require('hjson')
+const nvt = require('node-virustotal')
 
-class ClamAV {
+class VirusTotal {
     constructor() {
-
+        this.instance = nvt.makeAPI()
+        this.instance.setDelay(15000)
     }
 
-    async scan(filename, stream) {
+    async scan(item) {
+        const stream = await store.getItemStream()
         if (!config.get('clamav.enabled')) {
             return {
                 disabled: true
@@ -35,4 +35,4 @@ class ClamAV {
     }
 }
 
-module.exports = ClamAV
+module.exports = VirusTotal

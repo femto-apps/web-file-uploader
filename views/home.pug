@@ -1,6 +1,9 @@
 extends components/base
 
 block main
+    blockquote
+        p Version two is here, a complete rewrite that has been in the works for over a year!  There might be some bugs / teething issues, please post any comments / issues you have #[a(href='/issue') over here.]
+
     section
         center
             p
@@ -14,6 +17,11 @@ block main
             column
                 center
                     button#shorten-url Shorten URL
+            if user
+                column
+                    center
+                        a(href='/uploads')
+                            button#see-uploads See Uploads
 
     section
         pre
@@ -27,13 +35,8 @@ block main
                 #[span.comment # See more ways to upload #[a(href='https://github.com/femto-apps/web-file-uploader/wiki/Ways-to-Upload') here]]
                 #[#upload_container.hidden #[span.comment #[br]# Uploaded files]#[#uploads]]
     if user
-        section
-            h3 Temp Links:
-        section
-            a(href='/uploads') See your uploads
-            br
-            br
-            br
+        br
+        br
         section
             row
                 column(style='width:10%;')

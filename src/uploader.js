@@ -21,7 +21,7 @@ const uppy = Uppy({
         ]
     })
     .use(XHRUpload, {
-        endpoint: '/upload/multipart', 
+        endpoint: '/upload/multipart',
         fieldName: 'upload',
         getResponseData(text, resp) {
             const response = JSON.parse(text)
@@ -59,8 +59,8 @@ shortenButton.addEventListener('click', async () => {
         .then(res => res.json())
 
     document.getElementById('upload_container').style.display = 'block'
-    document.getElementById('uploads').innerHTML += 
-        `<a class='link' href='/${resp.data.short}'>${window.location.origin}/${resp.data.short}</a> <span class='comment'># ${url} (<a class='link' target='_blank' href='/info/${resp.data.short}'>info</a>)</span>`
+    document.getElementById('uploads').innerHTML +=
+        `<a class='link' href='/${resp.data.short}'>${window.location.origin}/${resp.data.short}</a> <span class='comment'># ${url} (<a class='link' target='_blank' href='/info/${resp.data.short}'>info</a>)</span><br>`
 
     console.log('resp', resp)
 })

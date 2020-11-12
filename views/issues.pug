@@ -1,0 +1,19 @@
+extends components/base
+
+block main
+    //- +flash()
+
+    section
+        form(action='/issue', method='post')
+
+            h3 Post Issue
+
+            fieldset
+                label(for='issue')#issue Describe Issue / Comment / Suggestion
+                textarea(name='issue' rows='10')
+
+                label(for='contact')#contact Contact
+                input(type='text', name='contact', placeholder='How should we contact you?' autocorrect='off', spellcheck='false', autocapitalize='off', autofocus='true')#contact
+                p You can fill in the above form if you want us to contact you about this at a later point.  Post either an email, discord handle, etc.
+
+                input(type='submit', value='Send')#send.button-outline

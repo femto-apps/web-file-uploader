@@ -29,8 +29,11 @@ const ShareX = require('./modules/ShareX')
 const Archive = require('./modules/Archive')
 const ClamAV = require('./modules/ClamAV')
 const Stats = require('./modules/Stats')
+const Mail = require('./modules/Mail')
 
 const { wrap } = require('./modules/Profiling')
+
+const analytics = require('express-google-analytics')('UA-121951630-1')
 
 function ignoreAuth(req, res) {
     return req.originalUrl.startsWith('/thumb/')
@@ -42,6 +45,7 @@ function ignoreAuth(req, res) {
 
     const clam = new ClamAV()
     const stats = new Stats()
+    const mail = new Mail(config.get('email'))
 
     const multer = Multer({
         storage: minioStorage({
@@ -66,6 +70,11 @@ function ignoreAuth(req, res) {
         useCreateIndex: true
     })
 
+    const redisClient = redis.createClient({
+        host: config.get('redis.host'),
+        port: config.get('redis.port')
+    })
+
     app.set('view engine', 'pug')
     app.set('trust proxy', ['loopback', ...config.get('trustedProxy')].join(','))
     app.disable('x-powered-by')
@@ -73,6 +82,7 @@ function ignoreAuth(req, res) {
     app.use(wrap(morgan('dev')))
     app.use(wrap(compression()))
     app.use(wrap(bodyParser.json()))
+    app.use(wrap(bodyParser.urlencoded()))
     app.use(wrap(cookieParser(config.get('cookie.secret'))))
     app.use(wrap(function sess(req, res, next) {
         // if we don't need req.user, ignore it.
@@ -82,10 +92,7 @@ function ignoreAuth(req, res) {
 
         session({
             store: new RedisStore({
-                client: redis.createClient({
-                    host: config.get('redis.host'),
-                    port: config.get('redis.port')
-                })
+                client: redisClient
             }),
             secret: config.get('session.secret'),
             resave: false,
@@ -159,6 +166,8 @@ function ignoreAuth(req, res) {
 
         next()
     }))
+
+    app.use(wrap(analytics))
 
     app.get('/', async (req, res) => {
         res.render('home', {
@@ -324,6 +333,24 @@ function ignoreAuth(req, res) {
 
     app.get('/sharex/uploader.sxcu', ShareX.downloadUploader)
     app.get('/sharex/shortener.sxcu', ShareX.downloadShortener)
+
+    app.get('/issue', async (req, res) => {
+        res.render('issues', {
+            page: { title: `Issues :: ${config.get('title.suffix')}` }
+        })
+    })
+
+    app.post('/issue', async (req, res) => {
+        console.log('sending suggestion', req.body)
+        const response = await mail.sendMail({
+            from: 'uploader@femto.host',
+            to: 'uploader@femto.host',
+            subject: 'Contact Form',
+            text: `Contact: ${req.body.contact}\nMessage: ${req.body.issue}`
+        })
+
+        res.send("thanks for your message, if you entered in a way to contact you we'll be in touch with our response :)")
+    })
 
     app.get(['/info/:item', '/info/:item/*'], Item.fromReq, async (req, res) => {
         res.render('info', {

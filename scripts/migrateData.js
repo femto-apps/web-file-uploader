@@ -12,6 +12,7 @@ const newCollection = require('../modules/Collection.js')
 const newItemModel = require('../modules/Item.js')
 const newStore = require('../modules/Store.js')
 const newShort = require('../modules/Short.js')
+const newShortModel = require('../models/Short.js')
 const Types = require('../types')
 
 const minioOptions = {
@@ -52,7 +53,11 @@ async function convertUrl(original) {
         // console.log('already handled', original._id, original.name.short)
         return
     }
-    
+
+    if (!original.user) {
+        original.user = {}
+    }
+
     console.log('start folder')
     const folder = (await newCollection.fromReq({
         user: original.user._id ? new newUser({ _id: original.user._id }) : undefined,
@@ -87,13 +92,18 @@ async function convertUrl(original) {
     await trueOriginal.save()
 }
 
-async function convertItem(original) {
+async function convertItem(original, force = false) {
     const trueOriginal = original
     original = JSON.parse(JSON.stringify(original))
 
     if (await newShort.get(original.name.short)) {
-        console.log('already handled', original._id, original.name.short)
-        return
+        if (!force) {
+            console.log('already handled', original._id, original.name.short)
+            return
+        }
+
+        const rem = await newShortModel.remove({ short: original.name.short })
+        console.log(rem)
     }
 
     console.log('original', original)
@@ -104,7 +114,7 @@ async function convertItem(original) {
     console.log('grabbing data stream')
     // download file and reupload it to minio
 
-    const fetchResponse = await fetch(`http://localhost:7983/${original.name.short}`)
+    const fetchResponse = await fetch(`http://localhost:7983/${original.name.short}?download`)
         .catch(e => {
             return 'failed'
         })
@@ -138,7 +148,6 @@ async function convertItem(original) {
     console.log('got body')
 
     await client.putObject(bucket, filepath, dataStream, undefined)
-    
 
     console.log('put object')
 
@@ -201,22 +210,124 @@ async function convertItem(original) {
     await trueOriginal.save()
 }
 
-async function init() {
-    // const items = await MinimalItem.find({ 'file.filetype': { '$ne': 'url' }, 'type.long': { '$ne': 'url' }, 'transfer': { '$ne': 'failed' } })
-    // const items = await MinimalItem.find({ 'file.filetype': { '$ne': 'url' }, 'type.long': { '$ne': 'url' }, 'transfer': { '$exists': false } })
-    const items = await MinimalItem.find({ 'type.long': 'url' })
+async function countLeft() {
+    const itemsLeft = await MinimalItem.countDocuments({ transfer: { '$ne': 'success' } })
+    const itemsTotal = await MinimalItem.countDocuments()
 
+    console.log(`Processed ${itemsTotal - itemsLeft} / ${itemsTotal} items (${((itemsTotal - itemsLeft) / itemsTotal * 100).toFixed(1)}%) `)
+}
 
-    for (let item of items) {
-        // await convertItem(item)
-        console.log(item)
-        return
-        await convertUrl(item)
+async function doesExist(url, name, size) {
+    const fetchResponse = await fetch(url)
+        .then(res => {
+            if (Number(res.headers.get('content-length')) !== size) {
+                return { failed: true, reason: 'size', expected: size, got: Number(res.headers.get('content-length')) }
+            }
+
+            if (!(res.headers.get('content-disposition').includes(name))) {
+                return { failed: true, reason: 'name' }
+            }
+
+            return { success: true }
+        })
+        .catch(e => {
+            console.log(e)
+            return { failed: true }
+        })
+
+    return fetchResponse
+}
+
+async function migrateItem(item) {
+    const simple = JSON.parse(JSON.stringify(item))
+
+    if (!simple.type) {
+        console.log(simple.name.extension)
+        if (simple.name.extension === 'png') simple.type = { long: 'image' }
+        else if (simple.file && simple.file.filetype) simple.type = { long: simple.file.filetype }
+        else if (['celtx', 'mp4', 'sql', 'jpg', 'gif', 'png', 'mov', 'jpeg', 'jpg-345'].includes(simple.name.extension)) {
+            const valid = await doesExist(`http://localhost:3005/${simple.name.short}?overrideVirusCheck=true`, simple.name.original, simple.file.length)
+            if (valid.success) {
+                console.log('looks valid')
+
+                item.transfer = 'success'
+                item.markModified('transfer')
+                await item.save()
+                return
+            }
+
+            return convertItem(item, true)
+        }
+        else {
+            console.log(item)
+            console.log('type not found')
+            process.exit(0)
+        }
     }
 
-    console.log('disconnecting')
+    if (simple.type.long === 'text') {
+        return convertItem(item, true)
+    }
+
+    if (simple.type.long === 'image' || simple.type.long === 'video' || simple.type.long === 'audio' || simple.type.long === 'binary') {
+        // does it already appear to exist?
+        const valid = await doesExist(`http://localhost:3005/${simple.name.short}?overrideVirusCheck=true`, simple.name.original, simple.file.length)
+        if (valid.success) {
+            console.log('looks valid')
+
+            item.transfer = 'success'
+            item.markModified('transfer')
+            await item.save()
+            return
+        }
+
+        console.log(simple.name.short)
+        console.log('does not look valid', valid)
+
+        if (valid.reason === 'size') {
+            return convertItem(item, true)
+        }
+
+        process.exit(0)
+    }
+
+    if (simple.type.long === 'url') {
+        console.log(item)
+        await convertUrl(item)
+        return
+    }
+
+    console.log(item)
+
+    process.exit(0)
+}
+
+async function init() {
+    await countLeft()
+
+    const remaining = await MinimalItem.find({ transfer: { '$ne': 'success' } })
+
+    for (let item of remaining) {
+        await migrateItem(item)
+    }
 
     mongoose.disconnect()
+
+    // const items = await MinimalItem.find({ 'file.filetype': { '$ne': 'url' }, 'type.long': { '$ne': 'url' }, 'transfer': { '$ne': 'failed' } })
+    // const items = await MinimalItem.find({ 'file.filetype': { '$ne': 'url' }, 'type.long': { '$ne': 'url' }, 'transfer': { '$exists': false } })
+    // const items = await MinimalItem.find({ 'type.long': 'url' })
+
+
+    // for (let item of items) {
+    //     // await convertItem(item)
+    //     console.log(item)
+    //     return
+    //     await convertUrl(item)
+    // }
+
+    // console.log('disconnecting')
+
+    // mongoose.disconnect()
 }
 
 init()

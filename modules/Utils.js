@@ -84,6 +84,24 @@ class Utils {
 
         return parts[0] + '?' + qs.stringify(extractedQuery)
     }
+
+    static timeout(promise, time) {
+        let timeout = new Promise((resolve, reject) => {
+            let id = setTimeout(() => {
+                clearTimeout(id);
+                reject('Timed out in ' + time + 'ms.')
+            }, time)
+        })
+
+        return Promise.race([
+            promise,
+            timeout
+        ])
+    }
+
+    static pause(time) {
+        return new Promise(resolve => setTimeout(resolve, time))
+    }
 }
 
 module.exports = Utils

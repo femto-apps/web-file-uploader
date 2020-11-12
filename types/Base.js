@@ -91,7 +91,7 @@ class Base {
             return true
         }
 
-        if (config.get('clamav.enabled') && !virus.run && req.query.overrideVirusCheck !== 'true') {
+        if (config.get('clamav.warn') && config.get('clamav.enabled') && !virus.run && req.query.overrideVirusCheck !== 'true') {
             Utils.addQuery(req.originalUrl, 'overrideVirusCheck', true)
             res.send(`This item hasn't been scanned yet and could be a virus, are you sure you want to view it? <a href="${Utils.addQuery(req.originalUrl, 'overrideVirusCheck', true)}">Click Here</a>`)
             return true
@@ -103,6 +103,7 @@ class Base {
 
         res.set('Content-Disposition', contentDisposition(await this.item.getName(), { type: 'inline' }))
         res.set('Content-Type', await this.getMime())
+        res.set('Cache-Control', 'public, max-age=604800, immutable')
 
         if (req.headers.range) {
             await promisify(sendRanges(this.handleRange.bind(this)))(req, res)
@@ -141,6 +142,7 @@ class Base {
 
         res.set('Content-Disposition', contentDisposition(await this.item.getName(), { type: 'inline' }))
         res.set('Content-Type', 'image/png')
+        res.set('Cache-Control', 'public, max-age=604800, immutable')
 
         const stream = await this.item.getThumbStream()
         stream.pipe(res)

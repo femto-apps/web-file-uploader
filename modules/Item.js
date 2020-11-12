@@ -21,7 +21,7 @@ class Item {
         return new Item(item)
     }
 
-    static async fromReq(req, res, next) {        
+    static async fromReq(req, res, next) {
         const short = await Short.get(req.params.item.split('.')[0])
 
         if (short === null) {
@@ -69,7 +69,6 @@ class Item {
     }
 
     async getCanonical() {
-        console.log(this.item.references.canonical)
         return this.item.references.canonical
     }
 
@@ -83,13 +82,13 @@ class Item {
 
     async getItemStream(range) {
         const itemStore = await this.getStore('references.storage')
-        
+
         return itemStore.getStream(range)
     }
 
     async getItemStat() {
         const itemStore = await this.getStore('references.storage')
-        
+
         return itemStore.getStat()
     }
 
@@ -163,7 +162,7 @@ class Item {
     }
 
     async incrementViews() {
-        return ItemModel.findOneAndUpdate({ _id: this.item._id }, { $inc : { 'metadata.views' : 1 } }).exec()
+        return ItemModel.findOneAndUpdate({ _id: this.item._id }, { $inc: { 'metadata.views': 1 } }).exec()
     }
 
     async id() {
