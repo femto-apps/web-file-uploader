@@ -49,6 +49,18 @@
     authenticationConsumer: {
         endpoint: http://localhost:3005
     }
+    email: {
+		name: 'localhost'
+		secure: false
+		host: 'smtp.example.com'
+		port: 587
+		auth {
+			type: 'login'
+			user: 'username'
+			pass: 'password'
+		}
+		authMethod: PLAIN
+    }
     experimental: {
         profiling: false
         statsTimer: 86400000 // 1000 * 60 * 60 * 24 (1 day)
