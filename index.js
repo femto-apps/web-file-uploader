@@ -71,9 +71,10 @@ function ignoreAuth(req, res) {
     })
 
     const redisClient = redis.createClient({
-        host: config.get('redis.host'),
-        port: config.get('redis.port')
-    })
+        host: config.get('redis.host') || '127.0.0.1',
+        port: config.get('redis.port') || 6379,
+        db: config.get('redis.db') || '0'
+	})
 
     app.set('view engine', 'pug')
     app.set('trust proxy', ['loopback', ...config.get('trustedProxy')].join(','))
