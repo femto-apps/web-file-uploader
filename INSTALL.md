@@ -81,22 +81,26 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 	    uri: 'mongodb://user:password@localhost:27017/',
 	    db: 'authenticationProvider'
 	  },
-	  redis: {
-	    session: 'sessions'
-	  },
-	  cookie: {
-	    maxAge: 1000 * 60 * 60 * 24 * 7 * 4, // 28 days
-	    secret: 'REPLACE THIS WITH A RANDOM STRING',
-	    name: 'provider'
-	  },
-	  session: {
-	    secret: 'REPLACE THIS WITH A RANDOM STRING'
-	  },
-	  title: {
-	    suffix: 'Femto Authentication Provider' // You can replace this with your favorite title
-	  },
-	  favicon: 'public/images/favicon/favicon.ico',
-	}
+      redis: {
+        // url: 'redis://127.0.0.1:6379/0',
+        host: '127.0.0.1',
+        port: 6379,
+        db: 0,
+        session: 'sessions'
+      },
+      cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 7 * 4, // 28 days
+        secret: 'REPLACE THIS WITH A RANDOM STRING',
+        name: 'provider'
+      },
+      session: {
+        secret: 'REPLACE THIS WITH A RANDOM STRING'
+      },
+      title: {
+        suffix: 'Femto Authentication Provider' // You can replace this with your favorite title
+      },
+      favicon: 'public/images/favicon/favicon.ico',
+    }
 	```
 
 5. Run `npm install`
@@ -160,7 +164,8 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 	```
 	https://www.example.com/login_callback
 	```
-10. When submitting above, you'll get authentication informations as JSON format. You **MUST** pick up `uuid` as `ConsumerId`
+10. If you got `...does not appear to be a URL` message, please refer https://github.com/femto-apps/web-authentication-provider/issues/8
+11. When submitting above, you'll get authentication informations as JSON format. You **MUST** pick up `uuid` as `ConsumerId`
 
 ## Install Web Authentication Token Service
 1. clone the repository of Web Authntication Token Service
@@ -170,6 +175,21 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 2. `cd token`
 3. Copy `config.default.js` to `config.js`
 4. Edit `config.js` if needed
+
+	- Example
+	```js
+	module.exports = {
+	  port: 4500,
+	  redis: {
+	    // url: 'redis://127.0.0.1:6379/0',
+	    host: '127.0.0.1',
+	    port: 6379,
+	    db: 0,
+	    session: 'sessions'
+	  }
+	}	
+	```
+
 5. Run `npm install`
 6. Run `node index.js`
 	When your system uses systemd, refer the following sample.
@@ -277,6 +297,19 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 	        name: file-uploader
 	        maxAge: 15552000000 // 1000 * 60 * 60 * 24 * 180 (6 months)
 	    }
+    	email {
+        	name: 'example.com'
+        	host: 'smtp.gmail.com'
+        	secure: false
+        	port: 587
+        	auth {
+            	user: 'username'
+            	pass: 'password'
+        	}
+        	authMethod: 'PLAIN'
+        	ignoreTLS: false
+		}
+
 	    tokenService: {
 	        endpoint: https://token.example.com
 	    }
