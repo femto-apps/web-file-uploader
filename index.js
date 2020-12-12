@@ -36,7 +36,7 @@ const { wrap } = require('./modules/Profiling')
 const analytics = require('express-google-analytics')('UA-121951630-1')
 
 function ignoreAuth(req, res) {
-    return req.originalUrl.startsWith('/thumb/')
+    return req.originalUrl.startsWith('/thumb/') || req.originalUrl.startsWith('/js/') || req.originalUrl.startsWith('/css/')
 }
 
 ; (async () => {
@@ -82,7 +82,7 @@ function ignoreAuth(req, res) {
     app.use(wrap(morgan('dev')))
     app.use(wrap(compression()))
     app.use(wrap(bodyParser.json()))
-    app.use(wrap(bodyParser.urlencoded()))
+    app.use(wrap(bodyParser.urlencoded({ extended: true })))
     app.use(wrap(cookieParser(config.get('cookie.secret'))))
     app.use(wrap(function sess(req, res, next) {
         // if we don't need req.user, ignore it.
@@ -167,7 +167,7 @@ function ignoreAuth(req, res) {
         next()
     }))
 
-    app.use(wrap(analytics))
+    // app.use(wrap(analytics))
 
     app.get('/', async (req, res) => {
         res.render('home', {
@@ -246,7 +246,7 @@ function ignoreAuth(req, res) {
         req.user = await User.fromReq(req)
         const expiresAt = Utils.parseExpiry(req.body.expiry)
 
-        console.log(req.body, req.headers)
+        // console.log(req.body, req.headers)
 
         const item = await Item.create({
             name: {
@@ -272,7 +272,7 @@ function ignoreAuth(req, res) {
     app.post(['/i/upload', '/upload', '/upload/multipart'], cors(), multer, async (req, res) => {
         req.user = await User.fromReq(req)
 
-        console.log(req.file)
+        // console.log(req.file)
 
         const originalName = req.file.originalname
         const extension = originalName.slice((originalName.lastIndexOf(".") - 1 >>> 0) + 2)
@@ -306,7 +306,7 @@ function ignoreAuth(req, res) {
 
         res.json({ data: { short } })
 
-        console.log('scanning file')
+        // console.log('scanning file')
         clam.scan(originalName, await store.getStream()).then(async result => {
             if (result.disabled) {
                 return console.log(`didn't run scan because it was disabled.`)

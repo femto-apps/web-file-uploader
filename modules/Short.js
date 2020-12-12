@@ -4,53 +4,53 @@ const alphabet = '23456789abcdefghijkmnpqrstuvwxyz'
 
 // A short transforms a small string to an item reference
 class Short {
-  constructor(short) {
-    this.short = short
-  }
-
-  static async createReference(short, item) {
-    console.log(short, item)
-
-    const shortItem = new ShortModel({
-      short, item: item._id
-    })
-
-    await shortItem.save()
-
-    return new Short(shortItem)
-  }
-
-  static async generate(options) {
-    if (typeof options === 'undefined') options = {}
-    if (typeof options.keyLength === 'undefined') options.keyLength = 4
-
-    let short = ''
-
-    for (let i = 0; i < options.keyLength; i++) {
-      short += alphabet[Math.floor(Math.random() * Math.floor(alphabet.length))]
+    constructor(short) {
+        this.short = short
     }
 
-    if (await ShortModel.findOne({ short })) {
-      return Short.generate(options)
+    static async createReference(short, item) {
+        console.log(`[+] Created short [${short}] for item [${item._id}, ${item.name.original}]`)
+
+        const shortItem = new ShortModel({
+            short, item: item._id
+        })
+
+        await shortItem.save()
+
+        return new Short(shortItem)
     }
 
-    return short
-  }
+    static async generate(options) {
+        if (typeof options === 'undefined') options = {}
+        if (typeof options.keyLength === 'undefined') options.keyLength = 4
 
-  static async get(short) {
-    const shortItem = await ShortModel.findOne({ short })
-      .populate('item')
+        let short = ''
 
-    return shortItem
-  }
+        for (let i = 0; i < options.keyLength; i++) {
+            short += alphabet[Math.floor(Math.random() * Math.floor(alphabet.length))]
+        }
 
-  id() {
-    return this.short._id
-  }
+        if (await ShortModel.findOne({ short })) {
+            return Short.generate(options)
+        }
 
-  model() {
-    return this.short
-  }
+        return short
+    }
+
+    static async get(short) {
+        const shortItem = await ShortModel.findOne({ short })
+            .populate('item')
+
+        return shortItem
+    }
+
+    id() {
+        return this.short._id
+    }
+
+    model() {
+        return this.short
+    }
 }
 
 module.exports = Short

@@ -305,29 +305,13 @@ async function migrateItem(item) {
 async function init() {
     await countLeft()
 
-    const remaining = await MinimalItem.find({ transfer: { '$ne': 'success' } })
+    const remaining = await MinimalItem.find({ transfer: { '$ne': 'success' } }).cursor()
 
-    for (let item of remaining) {
+    for (let item = await remaining.next(); item != null; item = await remaining.next()) {
         await migrateItem(item)
     }
 
     mongoose.disconnect()
-
-    // const items = await MinimalItem.find({ 'file.filetype': { '$ne': 'url' }, 'type.long': { '$ne': 'url' }, 'transfer': { '$ne': 'failed' } })
-    // const items = await MinimalItem.find({ 'file.filetype': { '$ne': 'url' }, 'type.long': { '$ne': 'url' }, 'transfer': { '$exists': false } })
-    // const items = await MinimalItem.find({ 'type.long': 'url' })
-
-
-    // for (let item of items) {
-    //     // await convertItem(item)
-    //     console.log(item)
-    //     return
-    //     await convertUrl(item)
-    // }
-
-    // console.log('disconnecting')
-
-    // mongoose.disconnect()
 }
 
 init()
