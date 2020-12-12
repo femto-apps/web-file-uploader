@@ -38,7 +38,6 @@
   </p>
 </p>
 
-PIPELINE TEST
 
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
