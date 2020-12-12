@@ -3,11 +3,7 @@
 
 name: Node.js CI
 
-on:
-  push:
-    branches: [ $default-branch ]
-  pull_request:
-    branches: [ $default-branch ]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -25,7 +21,5 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
-    - run: docker run -p 27017:27017 --name mongo -d mongo
-    - run: docker run -p 6379:6379 --name redis -d redis redis-server --appendonly yes
     - run: npm run build --if-present
     - run: npm test
