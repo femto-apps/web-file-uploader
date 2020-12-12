@@ -3,7 +3,11 @@
 
 name: Node.js CI
 
-on: [workflow_dispatch, push]
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
 
 jobs:
   build:
