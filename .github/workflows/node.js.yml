@@ -20,6 +20,7 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    - uses: c-hive/gha-npm-cache@v1
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test
