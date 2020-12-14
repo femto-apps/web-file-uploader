@@ -46,13 +46,13 @@
         host: 'smtp.example.com'
         secure: false
         port: 587
-        auth {
+        auth: {
             user: 'username'
             pass: 'password'
         }
         authMethod: 'PLAIN'
         ignoreTLS: false
-	}
+    }
     tokenService: {
         endpoint: http://localhost:4500
     }
