@@ -22,6 +22,7 @@
         port: 9000
         accessKey: 6ML8SMC66BO2IMCZH9IY
         secretKey: zO21IgZpawthEK6DibBOthwMWMFqM7iWr0riGCYR
+        itemBucket: web-file-uploader
         useSSL: false
     }
     clamav: {
