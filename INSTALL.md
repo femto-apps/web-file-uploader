@@ -297,7 +297,7 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 	        name: file-uploader
 	        maxAge: 15552000000 // 1000 * 60 * 60 * 24 * 180 (6 months)
 	    }
-    	email {
+    	email: {
         	name: 'example.com'
         	host: 'smtp.gmail.com'
         	secure: false
