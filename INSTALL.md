@@ -290,11 +290,11 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 	        secret: REPLACE THIS WITH A RAMDOM STRING
 	    }
 	    redis: {
-            host: 128.0.0.1
-            port: 6379
-            db: 0
-            // url: redis://192.168.207.201:6379/7
-        }
+                host: 128.0.0.1
+                port: 6379
+                db: 0
+                // url: redis://127.0.0.1:6379/0
+            }
 	    cookie: {
 	        name: file-uploader
 	        maxAge: 15552000000 // 1000 * 60 * 60 * 24 * 180 (6 months)
