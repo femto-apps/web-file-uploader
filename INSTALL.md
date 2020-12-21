@@ -283,7 +283,7 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 	        accessKey: ACCESSKEY
 	        secretKey: SECRETKEY
                 useSSL: false
-	    }
+            }
 	    clamav: {
 	        url: http://localhost:9001
 	    }
@@ -300,17 +300,17 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 	        name: file-uploader
 	        maxAge: 15552000000 // 1000 * 60 * 60 * 24 * 180 (6 months)
 	    }
-    	email: {
-        	name: 'example.com'
-        	host: 'smtp.gmail.com'
-        	secure: false
-        	port: 587
-        	auth: {
-            	    user: 'username'
-            	    pass: 'password'
-        	}
-        	authMethod: 'PLAIN'
-        	ignoreTLS: false
+    	    email: {
+                name: 'example.com'
+                host: 'smtp.gmail.com'
+                secure: false
+                port: 587
+                auth: {
+                    user: 'username'
+                    pass: 'password'
+                }
+                authMethod: 'PLAIN'
+                ignoreTLS: false
             }
 
 	    tokenService: {
