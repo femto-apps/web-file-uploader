@@ -282,6 +282,7 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 	        itemBucket: items // the bucket you created on Minio
 	        accessKey: ACCESSKEY
 	        secretKey: SECRETKEY
+                useSSL: false
 	    }
 	    clamav: {
 	        url: http://localhost:9001
@@ -305,12 +306,12 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
         	secure: false
         	port: 587
         	auth: {
-            	user: 'username'
-            	pass: 'password'
+            	    user: 'username'
+            	    pass: 'password'
         	}
         	authMethod: 'PLAIN'
         	ignoreTLS: false
-		}
+            }
 
 	    tokenService: {
 	        endpoint: https://token.example.com
