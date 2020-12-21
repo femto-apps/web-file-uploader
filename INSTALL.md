@@ -75,12 +75,12 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 
 	- Example
 	```js
-	module.exports = {
-	  port: 3001,
-	  mongo: {
-	    uri: 'mongodb://user:password@localhost:27017/',
-	    db: 'authenticationProvider'
-	  },
+    module.exports = {
+       port: 3001,
+       mongo: {
+          uri: 'mongodb://user:password@localhost:27017/',
+          db: 'authenticationProvider'
+      },
       redis: {
         // url: 'redis://127.0.0.1:6379/0',
         host: '127.0.0.1',
@@ -256,50 +256,50 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 
 	For example:
 	```hjson
-	{
-	    port: 3005
-	    dev: false
-	    trustedProxy: ['127.0.0.1/8', '::1/128']
-	    title: {
-	        name: Femto Uploader // You can replae this with your favorite name
-	        shortener: Femto Shortener // You can replae this with your favorite name
-	        suffix: Femto Uploader // You can replae this with your favorite name
-	    }
-	    url: {
-	        origin: https://www.example.com/
-	    }
-	    carbon: {
-	    	// you can find this installation directory with `which carbon-now`
-	        path: /path/to/.yarn/bin/carbon-now
-	    }
-	    mongo: {
-	        uri: mongodb://user:password@localhost:27017/
-	        db: fileUploader
-	    }
-	    minio: {
-	        host: 127.0.0.1
-	        port: 9000
-	        itemBucket: items // the bucket you created on Minio
-	        accessKey: ACCESSKEY
-	        secretKey: SECRETKEY
+        {
+            port: 3005
+            dev: false
+            trustedProxy: ['127.0.0.1/8', '::1/128']
+            title: {
+                name: Femto Uploader // You can replae this with your favorite name
+                shortener: Femto Shortener // You can replae this with your favorite name
+                suffix: Femto Uploader // You can replae this with your favorite name
+            }
+            url: {
+                origin: https://www.example.com/
+            }
+            carbon: {
+                // you can find this installation directory with `which carbon-now`
+                path: /path/to/.yarn/bin/carbon-now
+            }
+            mongo: {
+                uri: mongodb://user:password@localhost:27017/
+                db: fileUploader
+            }
+            minio: {
+                host: 127.0.0.1
+                port: 9000
+                itemBucket: items // the bucket you created on Minio
+                accessKey: ACCESSKEY
+                secretKey: SECRETKEY
                 useSSL: false
             }
-	    clamav: {
-	        url: http://localhost:9001
-	    }
-	    session: {
-	        secret: REPLACE THIS WITH A RAMDOM STRING
-	    }
-	    redis: {
+            clamav: {
+                url: http://localhost:9001
+            }
+            session: {
+                secret: REPLACE THIS WITH A RAMDOM STRING
+            }
+            redis: {
                 host: 128.0.0.1
                 port: 6379
                 db: 0
                 // url: redis://127.0.0.1:6379/0
             }
-	    cookie: {
-	        name: file-uploader
-	        maxAge: 15552000000 // 1000 * 60 * 60 * 24 * 180 (6 months)
-	    }
+            cookie: {
+                name: file-uploader
+                maxAge: 15552000000 // 1000 * 60 * 60 * 24 * 180 (6 months)
+            }
             email: {
                 name: 'example.com'
                 host: 'smtp.gmail.com'
@@ -313,21 +313,21 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
                 ignoreTLS: false
             }
 
-	    tokenService: {
-	        endpoint: https://token.example.com
-	    }
-	    authenticationProvider: {
-	        endpoint: https://auth.example.com
-	        consumerId: REPLACE THIS WITH YOUR CONSUMER ID // You got this in the installation step 10 for Web Authentication Provider
-	    }
-	    authenticationConsumer: {
-	        endpoint: https://www.example.com
-	    }
-	    experimental: {
-	        profiling: false
-	        statsTimer: 86400000 // 1000 * 60 * 60 * 24 (1 day)
-	    }
-	}
+            tokenService: {
+                endpoint: https://token.example.com
+            }
+            authenticationProvider: {
+                endpoint: https://auth.example.com
+                consumerId: REPLACE THIS WITH YOUR CONSUMER ID // You got this in the installation step 10 for Web Authentication Provider
+            }
+            authenticationConsumer: {
+               endpoint: https://www.example.com
+            }
+            experimental: {
+                profiling: false
+                statsTimer: 86400000 // 1000 * 60 * 60 * 24 (1 day)
+            }
+        }
 	```
 6. Run `npm install`
 7. Run `node index.js`
