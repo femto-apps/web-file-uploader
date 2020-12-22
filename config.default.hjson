@@ -22,6 +22,7 @@
         port: 9000
         accessKey: 6ML8SMC66BO2IMCZH9IY
         secretKey: zO21IgZpawthEK6DibBOthwMWMFqM7iWr0riGCYR
+        itemBucket: web-file-uploader
         useSSL: false
     }
     clamav: {
@@ -46,13 +47,13 @@
         host: 'smtp.example.com'
         secure: false
         port: 587
-        auth {
+        auth: {
             user: 'username'
             pass: 'password'
         }
         authMethod: 'PLAIN'
         ignoreTLS: false
-	}
+    }
     tokenService: {
         endpoint: http://localhost:4500
     }
