@@ -37,7 +37,7 @@
         "form-data": "^3.0.0",
         "isbinaryfile": "^4.0.6",
         "language-detect": "^1.1.0",
-        "lodash": "^4.17.19",
+        "lodash": "^4.17.21",
         "memoizee": "^0.4.14",
         "minio": "^7.0.16",
         "mongoose": "^5.10.14",
