@@ -47,7 +47,7 @@
         "multistream": "^4.0.0",
         "node-fetch": "^2.6.1",
         "node-virustotal": "^3.32.0",
-        "nodemailer": "^6.4.15",
+        "nodemailer": "^6.4.16",
         "number-abbreviate": "^2.0.0",
         "p-limit": "^3.0.2",
         "p-memoize": "^4.0.0",
