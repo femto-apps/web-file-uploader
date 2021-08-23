@@ -10,8 +10,9 @@
 	4. ClamAV (Optional)
 	5. [Node.js](https://nodejs.org/) v12 or later.
 	6. `carbon-now-cli` npm package
-	7. [Web Authentication Provider](https://github.com/femto-apps/web-authentication-provider)
-	8. [Web Authentication Token Service](https://github.com/femto-apps/web-authentication-token-service)
+	7. Package-Config, Pixman Dev Library, Cairo Dev Libirary, PangoCairo Dev Lbrary, Jpeg Dev Library
+	8. [Web Authentication Provider](https://github.com/femto-apps/web-authentication-provider)
+	9. [Web Authentication Token Service](https://github.com/femto-apps/web-authentication-token-service)
 
 ### Explanatory Notes.
 
@@ -245,14 +246,19 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 ## Install Web-File-Uploader
 1. Install `carbon-now-cli`.
 
-	e.g. `yarn global add carbon-now-cli` or `npm install -g carbon-now-cli`
-2. Clone the repository
+	e.g. `yarn global add carbon-now-cli` or `npm install -g carbon-now-clilibjpeg-dev`
+
+2. Install Package-Config, Pixman Dev Library, Cairo Dev Libirary, PangoCairo Dev Lbrary, Jpeg Dev Library.
+
+	e.g. `apt install pkgconf libpixman-1-dev libpixman-1-dev libcairo2-dev librust-pangocairo-dev libjpeg-dev`
+
+3. Clone the repository
 	```
 	git clone https://github.com/femto-apps/web-file-uploader.git uploader
 	```
-3. `cd uploader`
-4. Copy `config.default.hjson` to `config.hjson`
-5. Edit `config.hjson`. Specially you must change `minio.accessKey`, `minio.secretKey`, `session.secret` and `authenticationProvider.consumerId` and each `endpoint`.
+4. `cd uploader`
+5. Copy `config.default.hjson` to `config.hjson`
+6. Edit `config.hjson`. Specially you must change `minio.accessKey`, `minio.secretKey`, `session.secret` and `authenticationProvider.consumerId` and each `endpoint`.
 
 	For example:
 	```hjson
@@ -329,8 +335,8 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
             }
         }
 	```
-6. Run `npm install`
-7. Run `node index.js`
+7. Run `npm install`
+8. Run `node index.js`
 	When your system uses systemd, refer the following sample.
 	
 	```systemd
@@ -349,7 +355,7 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 	[Install]
 	WantedBy=multi-user.target
 	```
-8. Configure your web server
+9. Configure your web server
 	- Example for Apache
 
 	```apache
@@ -381,4 +387,4 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 		proxy / localhost:3005
 	}
 	```
-9. Access `https://www.example.com` and you can register as many users as you wish! :)
+10. Access `https://www.example.com` and you can register as many users as you wish! :)
