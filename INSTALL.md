@@ -246,7 +246,7 @@ docker run -p 9001:9000 --name clamav -d niilo/clamav-rest
 ## Install Web-File-Uploader
 1. Install `carbon-now-cli`.
 
-	e.g. `yarn global add carbon-now-cli` or `npm install -g carbon-now-clilibjpeg-dev`
+	e.g. `yarn global add carbon-now-cli` or `npm install -g carbon-now-cli`
 
 2. Install Package-Config, Pixman Dev Library, Cairo Dev Libirary, PangoCairo Dev Lbrary, Jpeg Dev Library.
 
