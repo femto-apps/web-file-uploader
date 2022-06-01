@@ -58,7 +58,7 @@
         "redis": "^3.0.2",
         "resolve-path": "^1.4.0",
         "send-ranges": "^3.0.0",
-        "sharp": "^0.25.3",
+        "sharp": "^0.30.5",
         "smartcrop-sharp": "^2.0.3",
         "stream-to-array": "^2.3.0",
         "tmp": "^0.2.1",
