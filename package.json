@@ -33,7 +33,7 @@
         "express-google-analytics": "^1.0.2",
         "express-session": "^1.17.1",
         "fetch-timeout": "0.0.2",
-        "file-type": "^14.6.1",
+        "file-type": "^16.5.4",
         "form-data": "^3.0.0",
         "isbinaryfile": "^4.0.6",
         "language-detect": "^1.1.0",
