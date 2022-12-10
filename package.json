@@ -29,7 +29,7 @@
         "dateformat": "^3.0.3",
         "errorhandler": "^1.5.1",
         "execa": "^4.0.2",
-        "express": "^4.17.1",
+        "express": "^4.17.3",
         "express-google-analytics": "^1.0.2",
         "express-session": "^1.17.1",
         "fetch-timeout": "0.0.2",
